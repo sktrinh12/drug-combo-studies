@@ -1,50 +1,16 @@
-import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js"
-import Heatmap from "./Heatmap";
-import SingleDRC from "./SingleDRC";
-import {useSearchParams} from "react-router-dom";
-import ReactLoading from "react-loading";
-
 
 export default function ComboPlots(props) {
-  const [data, setData] = useState();
-  const [loading, setLoading] = useState(true);
-	const url = "http://localhost:8000/v1/testdata/";
-  let [searchParams, setSearchParams] = useSearchParams();
-
-  const fetchData = async () => {
-		try {
-					let newUrl = url + searchParams.get("FT");
-					console.log(newUrl);
-					const res = await fetch(newUrl)
-					const json = await res.json()
-					// console.log(json);
-					setData(json);
-					setLoading(false);
-				} catch (error) {
-					console.log(error);
-		}
-  };
-  useEffect(() => {
-    fetchData();
-  }, [])
-
 
   return ( 
-				<div> 
-			{ loading ? <ReactLoading type="spin" color="#2E86C1"
-										height={667} width={375} margin="auto"
-										padding="10px"
-									/> :
-				<>
-				<Plot
+		<Plot
         data={[
           {
-            x: data["x"],
-            y: data["y"],
-            z: data["z"],
-				    cmin: data["vmin"],
-				    cmax: data["vmax"],
+            x: props.data["x"],
+            y: props.data["y"],
+            z: props.data["z"],
+				    // cmin: props.data["vmin"],
+				    // cmax: props.data["vmax"],
 				    opacity: 0.75,
             type:'surface',
 				    name: '',
@@ -56,8 +22,16 @@ export default function ComboPlots(props) {
 								project: {z: false}
 								}
 						},
-				    colorscale: 'YlGnBu',
-				    reversescale: true,
+				    // colorscale: 'YlGnBu',
+						 colorscale: [ 
+								['0.0', '#fcfed6'],
+								['0.2', '#dcf2ca'],
+								['0.4', '#6ec6b2'],
+								['0.6', '#2194b7'],
+								['0.8', '#254493'],
+								['1.0', '#121c52'],
+						],
+				    // reversescale: true,
 				    colorbar: {
 												lenmode: 'fraction',
 												len: 0.65,
@@ -65,20 +39,28 @@ export default function ComboPlots(props) {
 				    }
           },
 				  {
-				    x: data["xs"],
-            y: data["ys"],
-            z: data["zs"],
+				    x: props.data["xs"],
+            y: props.data["ys"],
+            z: props.data["zs"],
 				    type:'scatter3d',
 				    mode: 'markers',
 				    showlegend: false,
 				    name: '',
 				    marker: {
 								     size: 3.0,
-								     color: data['zs'],
-								     colorscale: 'YlGnBu',
-								     reversescale: true,
-								     cmin: data['vmin'],
-								     cmax: data['vmax'],
+								     color: props.data['zs'],
+								     // colorscale: 'YlGnBu',
+								     colorscale: [ 
+												['0.0', '#fcfed6'],
+												['0.2', '#dcf2ca'],
+												['0.4', '#6ec6b2'],
+												['0.6', '#2194b7'],
+												['0.8', '#254493'],
+												['1.0', '#121c52'],
+										],
+								     // reversescale: true,
+								     // cmin: props.data['vmin'],
+								     // cmax: props.data['vmax'],
 								     line: {
 												    width: 0.5,
 												    color: 'DarkSlateGrey'
@@ -86,9 +68,9 @@ export default function ComboPlots(props) {
 						}
 				  },
 					{
-						x: data["x1_xmin"],
-				    y: data["y1_xmin"],
-						z: data["z1_xmin"],
+						x: props.data["x1_xmin"],
+				    y: props.data["y1_xmin"],
+						z: props.data["z1_xmin"],
 						type: 'scatter3d',
 						mode: 'lines',
 				    name: 'Drug1 HSA',
@@ -98,10 +80,10 @@ export default function ComboPlots(props) {
 									}
 					},
 					{
-						x: data["x2_xmin"],
-						// y: Array(data["x"].length).fill(0),
-				    y: data["y2_xmin"],
-						z: data["z2_xmin"],
+						x: props.data["x2_xmin"],
+						// y: Array(props.data["x"].length).fill(0),
+				    y: props.data["y2_xmin"],
+						z: props.data["z2_xmin"],
 						type: 'scatter3d',
 						mode: 'lines',
 				    name: 'Drug2 HSA',
@@ -111,17 +93,17 @@ export default function ComboPlots(props) {
 									}
 					},
 					{
-						// y: data["ys"].reduce((arr, e, i) => ((data["xs"][i] == -1 ) && arr.push(e), arr), []),
-						y: data["y1_xmax"],
-						x: data["x1_xmax"],
-						z: data["z1_xmax"],
+						// y: props.data["ys"].reduce((arr, e, i) => ((props.data["xs"][i] == -1 ) && arr.push(e), arr), []),
+						y: props.data["y1_xmax"],
+						x: props.data["x1_xmax"],
+						z: props.data["z1_xmax"],
 						type: 'scatter3d',
 				    showlegend: false,
 				    name: '',
 						mode: 'lines',
 						line: {
 										width: 8,
-								    color: [...Array(data["z1_xmax"].length).keys()],
+								    color: [...Array(props.data["z1_xmax"].length).keys()],
 								    colorscale: [ 
 												['0.0', 'blue'],
 												['0.111111111111', 'blue'],
@@ -137,16 +119,16 @@ export default function ComboPlots(props) {
 									}
 					},
 				  { // Drug 2 is varied
-						y: data["x2_xmax"],
-						x: data["y2_xmax"],
-						z: data["z2_xmax"],
+						y: props.data["x2_xmax"],
+						x: props.data["y2_xmax"],
+						z: props.data["z2_xmax"],
 						type: 'scatter3d',
 						mode: 'lines',
 				    showlegend: false,
 				    name: '',
 						line: {
 										width: 8,
-								    color: [...Array(data["z2_xmax"].length).keys()], //count of datapoints
+								    color: [...Array(props.data["z2_xmax"].length).keys()], //count of datapoints
 								    colorscale: [ 
 												['0.0', 'red'],
 												['0.111111111111', 'red'],
@@ -158,9 +140,9 @@ export default function ComboPlots(props) {
 												['0.777777777778', 'rgb(228,14,167)'],
 												['0.888888888889', 'rgb(228,14,167)'],
 												['1.0', 'rgb(228,14,167)']
-												// // [Math.min(...data["z2_xmax"]).toString(): 'rgb(23, 38, 173)'], //blue
-												// // [(data["z2_xmax"].reduce((a, b) => a+b) / data["z2_xmax"].length).toString(): 'rgb(228,14,167)'], //magenta
-												// // [Math.max(...data["z2_xmax"]).toString(): 'rgb(228,12,5)'] //red
+												// // [Math.min(...props.data["z2_xmax"]).toString(): 'rgb(23, 38, 173)'], //blue
+												// // [(props.data["z2_xmax"].reduce((a, b) => a+b) / props.data["z2_xmax"].length).toString(): 'rgb(228,14,167)'], //magenta
+												// // [Math.max(...props.data["z2_xmax"]).toString(): 'rgb(228,12,5)'] //red
 										]
 									}
 					}
@@ -198,12 +180,5 @@ export default function ComboPlots(props) {
 									 }
 				}}
       />
-			<hr/>
-			<Heatmap data={data}/>
-			<hr/>
-			<SingleDRC data={data}/>
-		</>
-   }
-  </div>
   );
 }

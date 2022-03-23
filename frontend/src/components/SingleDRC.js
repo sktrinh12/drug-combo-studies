@@ -19,10 +19,12 @@ export default function SingleDRC(props) {
             x: d1,
             y: E1,
             mode: 'lines',
-				    color: '#205B9D',
+				    // color: '#205B9D',
 				    name: 'drug 1',
 				    line: {
 								    shape: 'spline',
+										color: 'blue',
+										width: 6,
 								    smoothing: 1.2
 								   }
           },
@@ -30,10 +32,12 @@ export default function SingleDRC(props) {
             x: d2,
             y: E2,
             mode: 'lines',
-				    color: '#CD3C1E',
+				    // color: '#CD3C1E',
 				    name: 'drug 2',
 				    line: {
 								    shape: 'spline',
+										color: 'red',
+										width: 6,
 								    smoothing: 1.2
 								   }
           }

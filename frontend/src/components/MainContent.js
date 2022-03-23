@@ -1,26 +1,71 @@
 import ComboPlots from "./ComboPlots";
+import Heatmap from "./Heatmap";
+import SingleDRC from "./SingleDRC";
 import Sidebar from "./Sidebar";
-import { useState } from "react";
+import ReactLoading from "react-loading";
+import {useSearchParams} from "react-router-dom";
+import { useEffect, useState } from "react";
 
 
+export default function MainContent() {
+	const [expanded, setExpanded] = useState(false);
+	const [data, setData] = useState();
+	const [loading, setLoading] = useState(true);
+	const url = "http://localhost:8000/v1/testdata/";
+	const [searchParams, setSearchParams] = useSearchParams();
 
-export default function MainContent(props) {
-const [expanded, setExpanded] = useState(false);
+  const fetchData = async () => {
+		try {
+					let newUrl = url + searchParams.get("compound_id");
+					console.log(newUrl);
+					const res = await fetch(newUrl)
+					const json = await res.json()
+					console.log(json);
+					setData(json);
+					setLoading(false);
+				} catch (error) {
+					console.log(error);
+		}
+  };
+  useEffect(() => {
+    fetchData();
+  }, [])
 
-function toggleSidebar() {
+  function toggleSidebar() {
 				setExpanded( !expanded );
-}
+  }
 
-return (
-   <>
-		 <Sidebar toggleSidebar={toggleSidebar} expanded={expanded} />
-		 <section className={
-		 								  expanded 
-		 									? "main-content main-content--expanded" 
-		 									: "main-content"}
+  return (
+	  <>	
+		{ loading 
+			? <ReactLoading type="spin" color="#2E86C1"
+														height={667} width={375} margin="auto"
+														padding="10px" /> 
+			:
+    <>
+		 <Sidebar 
+				toggleSidebar={toggleSidebar} 
+				expanded={expanded} 
+				calcValues={data["summary"]} 
+     />
+		 <section 
+				className={
+							expanded 
+							? "main-content main-content--expanded" 
+							: "main-content"
+				}
 		 >
-			<ComboPlots />
+
+		    <ComboPlots 
+								data={data} 
+								expanded={expanded}
+								loading={loading}
+        />
+			  <Heatmap data={data}/>
+				<SingleDRC data={data}/>
      </section>
 	</>
-);
+ }
+</>	
+ );
 }
