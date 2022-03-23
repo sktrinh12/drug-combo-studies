@@ -1,0 +1,7 @@
+pandas
+matplotlib
+scipy
+plotly
+fastapi
+uvicorn
+requests
