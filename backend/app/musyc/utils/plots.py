@@ -163,7 +163,7 @@ def square_log_axes(ax, nx, ny):
         #pos2 = [0,0,1,1]
         ax.set_position(pos2)
 
-def relabel_log_ticks(ax, d1, d2):
+def relabel_log_ticks(d1, d2):
     """
     In plotting using pcolormesh(E), the x and y axes go from 0 to nx (or ny).
     This function replaces those with tick marks reflecting the true doses.
@@ -171,6 +171,7 @@ def relabel_log_ticks(ax, d1, d2):
     """
     nx = len(d1)
     ny = len(d2)
+    tickdict = {}
 
     MIN_logx = np.log10(min(d1))
     MAX_logx = np.log10(max(d1))
@@ -187,8 +188,10 @@ def relabel_log_ticks(ax, d1, d2):
     ticks = np.interp(doses,[MIN_logx,MAX_logx],[0.5,nx-0.5]) 
     ticklabels = [r"$10^{{{}}}$".format(dose) for dose in doses]
 
-    ax.set_xticks(ticks)
-    ax.set_xticklabels(ticklabels)
+    # ax.set_xticks(ticks)
+    # ax.set_xticklabels(ticklabels)
+    tickdict["xticks"] = ticks
+    tickdict["xticklabels"] = ticklabels
 
     minor_ticks = []
     for i in range(min_logx-1, max_logx+1):
@@ -197,17 +200,17 @@ def relabel_log_ticks(ax, d1, d2):
     minor_ticks = interp(minor_ticks,MIN_logx,MAX_logx,0.5,nx-0.5)
     minor_ticks = [i for i in minor_ticks if i>0 and i<nx]
 
-    ax.set_xticks(minor_ticks, minor=True)
-
-
-
+    # ax.set_xticks(minor_ticks, minor=True)
+    tickdict["xminor_ticks"] = minor_ticks
 
     doses = np.arange(min_logy, max_logy+1, 1)
     ticks = np.interp(doses,[MIN_logy,MAX_logy],[0.5,ny-0.5]) 
     ticklabels = [r"$10^{{{}}}$".format(dose) for dose in doses]
 
-    ax.set_yticks(ticks)
-    ax.set_yticklabels(ticklabels)
+    # ax.set_yticks(ticks)
+    # ax.set_yticklabels(ticklabels)
+    tickdict["yticks"] = ticks
+    tickdict["yticklabels"] = ticklabels
 
 
     minor_ticks = []
@@ -217,7 +220,9 @@ def relabel_log_ticks(ax, d1, d2):
     minor_ticks = interp(minor_ticks,MIN_logy,MAX_logy,0.5,ny-0.5)
     minor_ticks = [i for i in minor_ticks if i>0 and i<ny]
 
-    ax.set_yticks(minor_ticks, minor=True)
+    # ax.set_yticks(minor_ticks, minor=True)
+    tickdict["yminor_ticks"] = minor_ticks
+    return tickdict
 
 def interp(x, x0, x1, y0, y1):
     return (np.asarray(x)-x0)*(y1-y0)/(x1-x0)+y0
@@ -274,6 +279,13 @@ def generate_3dsur_data(d1, d2, E, scatter_points, **kwargs):
         d2 = d2.reshape(n_d2,n_d1)
         E = E.reshape(n_d2,n_d1)
 
+    def antilog(val):
+        return 10**val
+
+    D1_hm = np.apply_along_axis(func1d=antilog, axis=0,  arr=D1)
+    D2_hm = np.apply_along_axis(func1d=antilog, axis=0,  arr=D2)
+    tickdict = relabel_log_ticks(np.unique(D1_hm), np.unique(D2_hm))
+
     zmax = max(abs(np.nanmin(E[~np.isinf(E)])), abs(np.nanmax(E[~np.isinf(E)])))
     vmin = -zmax
     vmax = zmax
@@ -301,12 +313,12 @@ def generate_3dsur_data(d1, d2, E, scatter_points, **kwargs):
 
     x1_xmin = [d1.min()]*d1.shape[1] #fixed min drug1
     y1_xmin = d1[-1].tolist() # vary drug2
-    z1_xmin = np.apply_along_axis(lambda x: x[0], 1, E).tolist() #higher z values
+    z1_xmin = np.apply_along_axis(lambda x: x[0], 1, E).tolist()  #higher z values
 
     # xmax drug 1 ; drug 2 minimised
     x2_xmax = [d1.max()]*d1.shape[1] #fixed max drug 2
     y2_xmax = d1[-1].tolist() #vary drug1
-    z2_xmax = np.apply_along_axis(lambda x: x[-1], 1, E).tolist() # lower z values
+    z2_xmax = np.apply_along_axis(lambda x: x[-1], 1, E).tolist()  # lower z values
     
     x2_xmin = d1[0].tolist() # min lowest values
     y2_xmin = d2[0].tolist() # min lowest values
@@ -338,6 +350,8 @@ def generate_3dsur_data(d1, d2, E, scatter_points, **kwargs):
         'y2_xmax': y2_xmax,
         'z2_xmax': z2_xmax
     }
+
+    data = {**data, **tickdict}
 
     for k in data.keys():
         if isinstance(data[k], np.ndarray):

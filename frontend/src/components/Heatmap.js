@@ -2,13 +2,12 @@ import React from 'react';
 import Plot from "react-plotly.js"
 
 export default function Heatmap(props) {
-  const data = props.data["z"];
   return (
     <div>
       <Plot
         data={[
           {
-            z: data,
+            z: props.data["z"],
             type:'heatmap',
 				    colorscale: 'YlGnBu',
 				    reversescale: true
@@ -17,13 +16,17 @@ export default function Heatmap(props) {
 
 				layout={{
 								title: 'Drug 1 vs Drug2 heatmap',
-								xaxis: { ticks: '',
-												 showticklabels: false,
-												 title: 'Drug1'
+								xaxis: { 
+												 tickmode: 'array',
+												 tickvals: props.data["xticks"],
+												 ticktext: props.data["xticklabels"].map((e) => (e.replace(/[${}]/gi, ''))),
+												 title: 'log(Drug1)'
 												},
-								yaxis: { ticks: '', 
-												 showticklabels: false,
-												 title: 'Drug2'
+								yaxis: { 
+												 tickmode: 'array',
+												 tickvals: props.data["yticks"], 
+												 ticktext: props.data["yticklabels"].map((e) => (e.replace(/[${}]/gi, ''))),
+												 title: 'log(Drug2)'
 												},
 								annotations: [
 												{
