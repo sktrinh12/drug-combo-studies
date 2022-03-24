@@ -4,7 +4,7 @@ import json
 import pandas as pd
 from starlette.responses import StreamingResponse
 from .helper import *
-from .testdata import generate_test_data, generate_test2_data, generate_test3_data
+from .testdata import generate_test_data, generate_test2_data, generate_test3_data, generate_test4_data
 from .ft_nbrs import ft_numbers
 
 app = FastAPI()
@@ -59,5 +59,5 @@ async def test_model(ft_nbr: str) -> Response:
     if ft_nbr not in ft_numbers:
         raise HTTPException(status_code=404, detail=f"That FT number, {ft_nbr} does not exist")
     print(ft_nbr)
-    data = generate_test3_data()
+    data = generate_test4_data()
     return data
