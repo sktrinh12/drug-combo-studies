@@ -7,10 +7,19 @@ export default function Heatmap(props) {
       <Plot
         data={[
           {
-            z: props.data["z"],
+						// z: props.data["z"].map((e) => (e.reverse())),
+						z: props.data["z"],
             type:'heatmap',
-				    colorscale: 'YlGnBu',
-				    reversescale: true
+				    // colorscale: 'YlGnBu',
+						colorscale: [ 
+											['0.0', '#fcfed6'],
+											['0.2', '#dcf2ca'],
+											['0.4', '#6ec6b2'],
+											['0.6', '#2194b7'],
+											['0.8', '#254493'],
+											['1.0', '#121c52'],
+						],
+				    reversescale: false 
           }
         ]}
 
@@ -18,15 +27,19 @@ export default function Heatmap(props) {
 								title: 'Drug 1 vs Drug2 heatmap',
 								xaxis: { 
 												 tickmode: 'array',
-												 tickvals: props.data["xticks"],
-												 ticktext: props.data["xticklabels"].map((e) => (e.replace(/[${}]/gi, ''))),
+												 tickvals: [...Array(props.data["d1_conc"].length+1).keys()],
+												 // tickvals: props.data["xticks"],
+												 // ticktext: props.data["xticklabels"].map((e) => (e.replace(/[${}]/gi, ''))),
+												 ticktext: [...props.data["d1_conc"].map((e) => (Math.pow(10, e).toFixed(2))), 0],
 												 title: 'log(Drug1)'
 												},
 								yaxis: { 
 												 tickmode: 'array',
-												 tickvals: props.data["yticks"], 
-												 ticktext: props.data["yticklabels"].map((e) => (e.replace(/[${}]/gi, ''))),
-												 title: 'log(Drug2)'
+												 // tickvals: props.data["yticks"], 
+												 tickvals: [...Array(props.data["d2_conc"].length+1).keys()],
+												 // ticktext: props.data["yticklabels"].map((e) => (e.replace(/[${}]/gi, ''))),
+												 ticktext: [...props.data["d2_conc"].map((e) => (Math.pow(10, e).toFixed(2))), 0],
+												 title: 'Drug2'
 												},
 								annotations: [
 												{
