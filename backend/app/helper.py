@@ -18,11 +18,11 @@ from .musyc.utils import plots, dose_tools
 #                   e2_bounds,
 #                   e3_bounds)
 
-#     model.fit(df['drug1.conc'], 
+#     model.fit(df['drug1.conc'],
 #              df['drug2.conc'],
 #              df['effect'],
 #              bootstrap_iterations=100)
-             
+
 #     return model
 
 # def visualise_model(df, model, type):
@@ -75,3 +75,17 @@ def generate_model_data(df,
     data = { **data, **params }
     data["summary"] = summary
     return data
+
+def exec_sql(query):
+    conn = psycopyg2.connect(user="postgres",
+                             password="postgres",
+                             host="172.23.0.2",
+                             database="postgres")
+    cur = conn.cursor()
+    cur.execute(query)
+    names = [ x[0] for x in cursor.description]
+    data = cur.fetchall()
+    cur.close()
+    conn.close()
+    # data = sqlio.read_sql_query(query, conn)
+    return pd.DataFrame(data, columns = names)
