@@ -2,6 +2,8 @@ from fastapi import FastAPI, Response, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import pandas as pd
+import pandas.io.sql as sqlio
+import psycopg2
 from starlette.responses import StreamingResponse
 from .helper import *
 from .testdata import generate_test_data, generate_test2_data, generate_test3_data, generate_test4_data
@@ -30,8 +32,12 @@ dfdict["dosedata"] = df
 ddict['dosedata'] = json.loads(df.to_json())
 df = pd.read_json("combo-data.json")
 dfdict["combodata"] = df
+df = pd.read_json("combo-data2.json")
+dfdict["combodata2"] = df
 with open("combo-data.json") as f:
     ddict['combodata'] = json.load(f)
+with open("combo-data2.json") as f:
+    ddict['combodata2'] = json.load(f)
 
 @app.get("/", tags=["roots"])
 async def read_root() -> dict:
@@ -51,7 +57,7 @@ async def vis_model(ft_nbr: str) -> Response:
     if ft_nbr not in ft_numbers:
         raise HTTPException(status_code=404, detail=f"That FT number,{ft_nbr} does not exist")
     print(ft_nbr)
-    data = generate_model_data(dfdict['combodata'], (0,1), (0,1), (0,1), (0,1))
+    data = generate_model_data(dfdict['combodata2'], (0,1), (0,1), (0,1), (0,1))
     return data
 
 @app.get("/v1/testdata/{ft_nbr}", tags=["fixed-data"])
