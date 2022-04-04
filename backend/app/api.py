@@ -8,6 +8,7 @@ from starlette.responses import StreamingResponse
 from .helper import *
 from .testdata import generate_test_data, generate_test2_data, generate_test3_data, generate_test4_data
 from .ft_nbrs import ft_numbers
+from .db import conn
 
 app = FastAPI()
 
@@ -39,6 +40,8 @@ with open("combo-data.json") as f:
 with open("combo-data2.json") as f:
     ddict['combodata2'] = json.load(f)
 
+row_drugs, col_drugs = drug_list(conn)
+
 @app.get("/", tags=["roots"])
 async def read_root() -> dict:
     return {"message": "Welcome to your home endpoint"}
@@ -52,15 +55,29 @@ async def get_dosedata() -> Response:
 async def get_combodata() -> Response:
     return ddict["combodata"]
 
-@app.get("/v1/data/{ft_nbr}", tags=["dynamic-data"])
-async def vis_model(ft_nbr: str) -> Response:
+@app.get("/v1/data/sql/{block_id}", tags=["dynamic-data"])
+async def vis_model(drug1: str, drug2: str, block_id: int) -> Response:
+    print(f"drug1: {drug1}\ndrgu2: {drug2}")
+    if drug1 not in row_drugs:
+        raise HTTPException(status_code=404, detail=f"That drug, {drug1} does not exist in the db")
+    if drug2 not in col_drugs:
+        raise HTTPException(status_code=404, detail=f"That drug, {drug2} does not exist in the db")
+    dsql = exec_sql(drug1, drug2, block_id, conn)
+    if dsql.shape[0] == 0:
+        raise HTTPException(status_code=404, detail=f"That block id, {block_id} does not exist for that pair of drugs")
+    data = generate_model_data(dsql, (0,1), (0,1), (0,1), (0,1))
+    return data
+    # return dsql.to_json()
+
+@app.get("/v1/data/files/{ft_nbr}", tags=["dynamic-data"])
+async def tmp_model(ft_nbr: str) -> Response:
     if ft_nbr not in ft_numbers:
         raise HTTPException(status_code=404, detail=f"That FT number,{ft_nbr} does not exist")
     print(ft_nbr)
     data = generate_model_data(dfdict['combodata2'], (0,1), (0,1), (0,1), (0,1))
     return data
 
-@app.get("/v1/testdata/{ft_nbr}", tags=["fixed-data"])
+@app.get("/v1/data/test/{ft_nbr}", tags=["fixed-data"])
 async def test_model(ft_nbr: str) -> Response:
     if ft_nbr not in ft_numbers:
         raise HTTPException(status_code=404, detail=f"That FT number, {ft_nbr} does not exist")
