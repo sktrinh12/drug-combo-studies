@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 from .musyc.combinations.musyc import MuSyC
 from .musyc.utils import plots, dose_tools
+import pandas as pd
 # from musyc.combinations.musyc import MuSyC
 # from musyc.utils import plots, dose_tools
 
@@ -76,16 +77,43 @@ def generate_model_data(df,
     data["summary"] = summary
     return data
 
-def exec_sql(query):
-    conn = psycopyg2.connect(user="postgres",
-                             password="postgres",
-                             host="172.23.0.2",
-                             database="postgres")
+def exec_sql(drug1, drug2, block_id, conn):
     cur = conn.cursor()
+    query = f"""SELECT BLOCK_ID,
+                       CONC_ROW,
+                       CONC_COL,
+                       RESPONSE
+                FROM DRUG_COMBO_DATA
+                WHERE DRUG_ROW = '{drug1}'
+                AND DRUG_COL = '{drug2}'"""
     cur.execute(query)
-    names = [ x[0] for x in cursor.description]
+    names = [x[0] for x in cur.description]
     data = cur.fetchall()
     cur.close()
-    conn.close()
-    # data = sqlio.read_sql_query(query, conn)
-    return pd.DataFrame(data, columns = names)
+    data = pd.DataFrame(data, columns=names)
+    data.columns = ['block_id', 'drug1.conc', 'drug2.conc', 'effect']
+    if block_id not in data['block_id']:
+        return pd.DataFrame()
+    data = data[data['block_id'] == block_id]
+    data = data[['drug1.conc', 'drug2.conc', 'effect']]
+    zero_conc = data[(data['drug1.conc'] == 0) & (data['drug2.conc'] == 0)]['effect'].item()
+    data['effect'] = data['effect'].apply(lambda x: round(x/zero_conc, 5))
+    data['effect'] = pd.to_numeric(data['effect'])
+    data['drug1.conc'] = pd.to_numeric(data['drug1.conc'])
+    data['drug2.conc'] = pd.to_numeric(data['drug2.conc'])
+    return data
+
+def drug_list(conn):
+    cur = conn.cursor()
+    query = """
+            SELECT DISTINCT DRUG_{0}
+            FROM DRUG_COMBO_DATA
+            """
+    cur.execute(query.format('ROW'))
+    row_drugs = cur.fetchall()
+    row_drugs = [d[0] for d in row_drugs]
+    cur.execute(query.format('COL'))
+    col_drugs = cur.fetchall()
+    col_drugs = [d[0] for d in col_drugs]
+    cur.close()
+    return row_drugs, col_drugs
