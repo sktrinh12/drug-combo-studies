@@ -9,7 +9,9 @@ render(
 				<BrowserRouter>
 				<Routes>
 								<Route path="/" element={<App />} />
-								<Route path="showplot" element={<MainContent/>} />
+								<Route path="test-plot" element={<MainContent route={"test"} />} />
+								<Route path="file-plot" element={<MainContent route={"files"} />} />
+								<Route path="cmbdb-plot" element={<MainContent route={"sql"} />} />
 								<Route
 											path="*"
 											element={
