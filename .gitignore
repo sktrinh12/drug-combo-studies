@@ -168,3 +168,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# exclude the combodb csv file
+drugcombs_response.csv
