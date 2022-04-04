@@ -1,0 +1,29 @@
+CREATE TABLE DRUG_COMBO_DATA ( 
+				id SERIAL,
+				BLOCK_ID INT,
+				ROW INT, 
+				COL INT, 
+				DRUG_ROW VARCHAR(100), 
+				DRUG_COL VARCHAR(100), 
+				CONC_ROW NUMERIC, 
+				CONC_COL NUMERIC, 
+				RESPONSE NUMERIC, 
+				CONC_ROW_UNIT VARCHAR(25), 
+				CONC_COL_UNIT VARCHAR(25),
+				SOURCE VARCHAR(50)
+);
+
+COPY DRUG_COMBO_DATA (
+				BLOCK_ID,
+				ROW, 
+				COL,
+				DRUG_ROW, 
+				DRUG_COL, 
+				CONC_ROW, 
+				CONC_COL, 
+				RESPONSE, 
+				CONC_ROW_UNIT, 
+				CONC_COL_UNIT, 
+				SOURCE ) 
+FROM '/home/postgres/drugcombs_response.csv' 
+DELIMITER ',' CSV HEADER;
