@@ -1,7 +1,7 @@
 import Plot from "react-plotly.js"
 
 export default function ComboPlots(props) {
-
+  // console.log(props.drugs);
   return ( 
 		<Plot
         data={[
@@ -73,7 +73,7 @@ export default function ComboPlots(props) {
 						z: props.data["z1_xmin"],
 						type: 'scatter3d',
 						mode: 'lines',
-				    name: 'Drug1 HSA',
+				    name: props.drugs['drug1'] + ' HSA',
 						line: {
 										width: 8,
 										color: 'blue'
@@ -86,7 +86,7 @@ export default function ComboPlots(props) {
 						z: props.data["z2_xmin"],
 						type: 'scatter3d',
 						mode: 'lines',
-				    name: 'Drug2 HSA',
+				    name: props.drugs['drug2'] + ' HSA',
 						line: {
 										width: 8,
 										color: 'red'
@@ -105,22 +105,22 @@ export default function ComboPlots(props) {
 										width: 8,
 								    color: [...Array(props.data["z1_xmax"].length).keys()],
 								    colorscale: [ 
-												['0.0', 'blue'],
-												['0.111111111111', 'blue'],
-												['0.222222222222', 'blue'],
-												['0.333333333333', 'blue'],
+												['0.0', 'rgb(228,14,167)'],
+												['0.111111111111', 'rgb(228,14,167)'],
+												['0.222222222222', 'rgb(228,14,167)'],
+												['0.333333333333', 'rgb(228,14,167)'],
 												['0.444444444444', 'rgb(228,14,167)'],
-												['0.555555555556', 'rgb(228,14,167)'],
-												['0.666666666667', 'rgb(228,14,167)'],
-												['0.777777777778', 'rgb(228,14,167)'],
-												['0.888888888889', 'rgb(228,14,167)'],
-												['1.0', 'rgb(228,14,167)']
+												['0.555555555556', 'blue'],
+												['0.666666666667', 'blue'],
+												['0.777777777778', 'blue'],
+												['0.888888888889', 'blue'],
+												['1.0', 'blue']
 										]
 									}
 					},
 				  { // Drug 2 is varied
-						y: props.data["x2_xmax"],
-						x: props.data["y2_xmax"],
+						x: props.data["x2_xmax"],
+						y: props.data["y2_xmax"],
 						z: props.data["z2_xmax"],
 						type: 'scatter3d',
 						mode: 'lines',
@@ -168,10 +168,10 @@ export default function ComboPlots(props) {
 																	}
 													},
 													xaxis: {
-																 title: 'Drug1'
+																 title: props.drugs['drug1']
 													},
 													yaxis: {
-																 title: 'Drug2'
+																 title: props.drugs['drug2']
 													},
 													zaxis: {
 																 title: 'Effect'
