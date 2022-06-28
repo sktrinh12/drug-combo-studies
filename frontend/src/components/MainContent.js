@@ -7,19 +7,35 @@ import {useSearchParams} from "react-router-dom";
 import { useEffect, useState } from "react";
 
 
-export default function MainContent() {
+export default function MainContent(props) {
 	const [expanded, setExpanded] = useState(false);
 	const [data, setData] = useState();
+	const [drugs, setDrugs] = useState({"drug1": '', "drug2": ''});
 	const [loading, setLoading] = useState(true);
-	const url = "http://localhost:8000/v1/testdata/";
+	const url = `http://localhost:8000/v1/data/${props.route}/`;
 	const [searchParams, setSearchParams] = useSearchParams();
+	let drug1 = '';
+	let drug2 = '';
 
   const fetchData = async () => {
 		try {
-					let newUrl = url + searchParams.get("compound_id");
+					let endpointID = props.route === "sql" ? "block_id" : "compound_id";
+					// console.log(endpointID);
+					let newUrl = url + searchParams.get(endpointID);
+					drug1 = searchParams.get("drug1");
+					drug2 = searchParams.get("drug2");
+					setDrugs({"drug1": drug1, "drug2": drug2});
+					newUrl = newUrl + (props.route === "sql" 
+									 ? "?drug1=" + drug1 + 
+										 "&drug2=" + drug2 
+									 : "");
 					console.log(newUrl);
 					const res = await fetch(newUrl)
 					const json = await res.json()
+				  // let statusCode = res.status;
+				  // if (statusCode !== 200) {
+
+				  // };
 					console.log(json);
 					setData(json);
 					setLoading(false);
@@ -59,10 +75,11 @@ export default function MainContent() {
 		    <ComboPlots 
 								data={data} 
 								expanded={expanded}
+								drugs={drugs}
 								loading={loading}
         />
-			  <Heatmap data={data}/>
-				<SingleDRC data={data}/>
+			  <Heatmap data={data} drugs={drugs} />
+				<SingleDRC data={data} drugs={drugs} />
      </section>
 	</>
  }
