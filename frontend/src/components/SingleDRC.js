@@ -20,7 +20,8 @@ export default function SingleDRC(props) {
             y: E1,
             mode: 'lines',
 				    // color: '#205B9D',
-				    name: 'drug 1',
+				    // name: 'drug 1',
+				    name: props.drugs['drug1'],
 				    line: {
 								    shape: 'spline',
 										color: 'blue',
@@ -33,7 +34,8 @@ export default function SingleDRC(props) {
             y: E2,
             mode: 'lines',
 				    // color: '#CD3C1E',
-				    name: 'drug 2',
+				    // name: 'drug 2',
+				    name: props.drugs['drug2'],
 				    line: {
 								    shape: 'spline',
 										color: 'red',
