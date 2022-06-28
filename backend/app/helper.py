@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 from .musyc.combinations.musyc import MuSyC
-from .musyc.utils import plots, dose_tools
+from .musyc.utils import plots, dose_tools, np
 import pandas as pd
 # from musyc.combinations.musyc import MuSyC
 # from musyc.utils import plots, dose_tools
@@ -47,12 +47,40 @@ import pandas as pd
 #         data = plots.generate_3dsur_data(d1, d2, E=E, scatter_points=df)
 #     return data
 
+def map_conc_order(conc, unq_conc, reverse=False):
+    num_sf = 6
+    rev_flag = None
+    up_to = None
+    cnt = 0
+    conc = np.round_(conc, num_sf)
+    if reverse:
+        rev_flag = -1
+        up_to = -1
+        cnt = 1
+    if conc == 0.0:
+        return 0
+    specific_order = np.round_(np.sort(unq_conc)[::rev_flag][:up_to], num_sf)
+    order_dct = {v: k+cnt for k, v in enumerate(specific_order)}
+    res = order_dct[conc]
+    return res
+
 def generate_model_data(df,
                         e0_bounds,
                         e1_bounds,
                         e2_bounds,
-                        e3_bounds):
+                        e3_bounds,
+                        knte_dtype):
     print('model running...')
+
+    if knte_dtype:
+        unq_conc1 = np.sort(df['drug1.conc'].unique())
+        unq_conc2 = np.sort(df['drug2.conc'].unique())
+        group_order2 = [[i]*unq_conc2.shape[0] for i in range(int(df.shape[0]/unq_conc2.shape[0]))]
+        group_order2 = [item for sublist in group_order2 for item in sublist]
+        df['drug2.index.order'] = df["drug2.conc"].apply(lambda x: map_conc_order(x, unq_conc2))
+        df['drug2.index.group.order'] = group_order2
+        df['drug1.index.order'] = df["drug1.conc"].apply(lambda x: map_conc_order(x, unq_conc1))
+        df = df.sort_values(['drug1.index.order', 'drug2.index.order'])
 
     d1 = df['drug1.conc']
     d2 = df['drug2.conc']
@@ -67,7 +95,7 @@ def generate_model_data(df,
 
     E = model.E(d1, d2)
     print('generate data from model...')
-    data = plots.generate_3dsur_data(d1, d2, E=E, scatter_points=df)
+    data = plots.generate_3dsur_data(d1, d2, E=E, scatter_points=df, knte_dtype=knte_dtype)
     params = model.get_parameters(confidence_interval=95)
     # print(params)
     # print(''.join(['-']*10))
