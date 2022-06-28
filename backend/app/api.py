@@ -6,7 +6,7 @@ import pandas.io.sql as sqlio
 import psycopg2
 from starlette.responses import StreamingResponse
 from .helper import *
-from .testdata import generate_test_data, generate_test2_data, generate_test3_data, generate_test4_data
+from .testdata import generate_test_data, generate_test2_data, generate_test3_data, generate_test4_data, generate_test5_data
 from .ft_nbrs import ft_numbers
 from .db import conn
 
@@ -35,10 +35,14 @@ df = pd.read_json("combo-data.json")
 dfdict["combodata"] = df
 df = pd.read_json("combo-data2.json")
 dfdict["combodata2"] = df
+df = pd.read_json("combo-data3.json")
+dfdict["combodata3"] = df
 with open("combo-data.json") as f:
-    ddict['combodata'] = json.load(f)
-with open("combo-data2.json") as f:
-    ddict['combodata2'] = json.load(f)
+    # ddict['combodata'] = json.load(f)
+    dfdict['combodata'] = pd.read_json(f)
+with open("combo-data3.json") as f:
+    # ddict['combodata3'] = json.load(f)
+    dfdict['combodata3'] = pd.read_json(f)
 
 row_drugs, col_drugs = drug_list(conn)
 
@@ -65,16 +69,27 @@ async def vis_model(drug1: str, drug2: str, block_id: int) -> Response:
     dsql = exec_sql(drug1, drug2, block_id, conn)
     if dsql.shape[0] == 0:
         raise HTTPException(status_code=404, detail=f"That block id, {block_id} does not exist for that pair of drugs")
-    data = generate_model_data(dsql, (0,1), (0,1), (0,1), (0,1))
+    data = generate_model_data(dsql,
+                               (0, 1),
+                               (0, 1),
+                               (0, 1),
+                               (0, 1),
+                               False
+                               )
     return data
-    # return dsql.to_json()
 
 @app.get("/v1/data/files/{ft_nbr}", tags=["dynamic-data"])
 async def tmp_model(ft_nbr: str) -> Response:
     if ft_nbr not in ft_numbers:
         raise HTTPException(status_code=404, detail=f"That FT number,{ft_nbr} does not exist")
     print(ft_nbr)
-    data = generate_model_data(dfdict['combodata2'], (0,1), (0,1), (0,1), (0,1))
+    data = generate_model_data(dfdict['combodata3'],
+                               (0, 1),
+                               (0, 1),
+                               (0, 1),
+                               (0, 1),
+                               True
+                               )
     return data
 
 @app.get("/v1/data/test/{ft_nbr}", tags=["fixed-data"])
@@ -82,5 +97,5 @@ async def test_model(ft_nbr: str) -> Response:
     if ft_nbr not in ft_numbers:
         raise HTTPException(status_code=404, detail=f"That FT number, {ft_nbr} does not exist")
     print(ft_nbr)
-    data = generate_test4_data()
+    data = generate_test5_data()
     return data
