@@ -1,5 +1,9 @@
-import React from 'react';
 import Plot from "react-plotly.js"
+
+const floorToExpon = (number, places) => {
+				const l = 10 ** (Math.floor(Math.log10(Math.abs(number))) - places);
+				return (Math.floor(number / l) * l).toExponential(places);
+}
 
 export default function Heatmap(props) {
   return (
@@ -24,22 +28,24 @@ export default function Heatmap(props) {
         ]}
 
 				layout={{
-								title: 'Drug 1 vs Drug2 heatmap',
+								title: `${props.drugs['drug1']} vs ${props.drugs['drug2']} heatmap`,
 								xaxis: { 
 												 tickmode: 'array',
-												 tickvals: [...Array(props.data["d1_conc"].length+1).keys()],
+												 tickvals: [...Array(props.data["d2_conc"].length+1).keys()],
 												 // tickvals: props.data["xticks"],
 												 // ticktext: props.data["xticklabels"].map((e) => (e.replace(/[${}]/gi, ''))),
-												 ticktext: [...props.data["d1_conc"].map((e) => (Math.pow(10, e).toFixed(2))), 0],
-												 title: 'log(Drug1)'
+												 ticktext: [0.0, ...props.data["d2_conc"].map((e) => (floorToExpon(Math.pow(10, e), 2)))],
+												 // title: 'Drug1'
+												 title: props.drugs['drug2']
 												},
 								yaxis: { 
 												 tickmode: 'array',
 												 // tickvals: props.data["yticks"], 
-												 tickvals: [...Array(props.data["d2_conc"].length+1).keys()],
+												 tickvals: [...Array(props.data["d1_conc"].length+1).keys()],
 												 // ticktext: props.data["yticklabels"].map((e) => (e.replace(/[${}]/gi, ''))),
-												 ticktext: [...props.data["d2_conc"].map((e) => (Math.pow(10, e).toFixed(2))), 0],
-												 title: 'Drug2'
+												 ticktext: [0.0, ...props.data["d1_conc"].map((e) => (floorToExpon(Math.pow(10, e), 2)))],
+												 // title: 'Drug2'
+												 title: props.drugs['drug1']
 												},
 								annotations: [
 												{
