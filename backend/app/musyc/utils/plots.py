@@ -19,13 +19,11 @@ def generate_heatmap_data(d1, d2, E, **kwargs):
     D1 = d1[sorted_indices]
     D2 = d2[sorted_indices]
     E = E[sorted_indices]
-    
     # Replicates
     n_replicates = np.unique(get_num_replicates(d1,d2))
     if len(n_replicates)>1:
         raise ValueError("plot_heatmap() expects the same number of replicates for each dose")
     n_replicates = n_replicates[0]
-    
     if n_replicates != 1:
         aggfunc = kwargs.get('aggfunc', np.median)
         print(F'Number of replicates : {n_replicates}. aggregates the data using the {aggfunc.__name__}')
@@ -43,7 +41,6 @@ def generate_heatmap_data(d1, d2, E, **kwargs):
 
     if len(d1) != n_d1*n_d2*n_replicates :
         raise ValueError("plot_heatmap() requires d1, d2 to represent a dose grid")
-    
     E = E.reshape(n_d2, n_d1)
     return E.tolist()
 
@@ -62,13 +59,11 @@ def plot_heatmap(d1, d2, E, ax=None, fname=None, title="", xlabel="Drug 1", \
     D1 = d1[sorted_indices]
     D2 = d2[sorted_indices]
     E = E[sorted_indices]
-    
     # Replicates
     n_replicates = np.unique(get_num_replicates(d1,d2))
     if len(n_replicates)>1:
         raise ValueError("plot_heatmap() expects the same number of replicates for each dose")
     n_replicates = n_replicates[0]
-    
     if n_replicates != 1:
         aggfunc = kwargs.get('aggfunc', np.median)
         print(F'Number of replicates : {n_replicates}. plot_heatmap() aggregates the data using the {aggfunc.__name__}')
@@ -87,8 +82,6 @@ def plot_heatmap(d1, d2, E, ax=None, fname=None, title="", xlabel="Drug 1", \
 
     if len(d1) != n_d1*n_d2*n_replicates :
         raise ValueError("plot_heatmap() requires d1, d2 to represent a dose grid")
-    
-    
     created_ax = False
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
@@ -227,8 +220,10 @@ def relabel_log_ticks(d1, d2):
 def interp(x, x0, x1, y0, y1):
     return (np.asarray(x)-x0)*(y1-y0)/(x1-x0)+y0
 
-def generate_3dsur_data(d1, d2, E, scatter_points, **kwargs):
-    
+def antilog(val):
+    return 10**val
+
+def generate_3dsur_data(d1, d2, E, scatter_points, knte_dtype, **kwargs):
     d1_conc = np.log10(d1[(d2 == 0) & (d1 != 0)])
     d1_effect = E[(d2 == 0) & (d1 != 0)]
 
@@ -244,10 +239,11 @@ def generate_3dsur_data(d1, d2, E, scatter_points, **kwargs):
     d1 = np.log10(d1)
     d2 = np.log10(d2)
 
-    sorted_indices = np.lexsort((d1,d2))
+    sorted_indices = np.lexsort((d1, d2))
     D1 = d1[sorted_indices]
     D2 = d2[sorted_indices]
-    E = E[sorted_indices]
+    if not knte_dtype:  # no sorting for kinnate data, all others req'd
+        E = E[sorted_indices]
 
     # Replicates
     n_replicates = np.unique(get_num_replicates(D1,D2))
@@ -271,16 +267,18 @@ def generate_3dsur_data(d1, d2, E, scatter_points, **kwargs):
 
         n_d1 = len(np.unique(D1))
         n_d2 = len(np.unique(D2))
-        E = E.reshape(n_d2,n_d1)
+        E = E.reshape(n_d2, n_d1)
     else:
         n_d1 = len(np.unique(d1))
         n_d2 = len(np.unique(d2))
-        d1 = d1.reshape(n_d2,n_d1)
-        d2 = d2.reshape(n_d2,n_d1)
-        E = E.reshape(n_d2,n_d1)
+        if n_d1 != n_d2:
+            min_dim = min(n_d2, n_d1)
+            n_d2 = max(n_d2, n_d1)
+            n_d1 = min_dim
+        d1 = d1.reshape(n_d2, n_d1)
+        d2 = d2.reshape(n_d2, n_d1)
+        E = E.reshape(n_d2, n_d1)
 
-    def antilog(val):
-        return 10**val
 
     D1_hm = np.apply_along_axis(func1d=antilog, axis=0,  arr=D1)
     D2_hm = np.apply_along_axis(func1d=antilog, axis=0,  arr=D2)
@@ -307,24 +305,25 @@ def generate_3dsur_data(d1, d2, E, scatter_points, **kwargs):
     # HSA single dose for both drugs (side line plots)
 
     # xmin drug 1; drug 2 is maximised
-    x1_xmax = d1[-1].tolist() # vary drug1
-    y1_xmax = d2[-1].tolist() # fixed max drug2
+    x1_xmax = d1[-1].tolist()  # vary drug1
+    y1_xmax = d2[-1].tolist()  # fixed max drug2
     z1_xmax = E[-1].tolist()
 
-    x1_xmin = [d1.min()]*d1.shape[1] #fixed min drug1
-    y1_xmin = d1[-1].tolist() # vary drug2
-    z1_xmin = np.apply_along_axis(lambda x: x[0], 1, E).tolist()  #higher z values
+    x1_xmin = np.apply_along_axis(lambda x: x[-1], 1, d1)  # fixed min drug1
+    y1_xmin = np.apply_along_axis(lambda x: x[-1], 1, d2)  # vary drug2
+    z1_xmin = np.apply_along_axis(lambda x: x[-1], 1, E)
 
     # xmax drug 1 ; drug 2 minimised
-    x2_xmax = [d1.max()]*d1.shape[1] #fixed max drug 2
-    y2_xmax = d1[-1].tolist() #vary drug1
-    z2_xmax = np.apply_along_axis(lambda x: x[-1], 1, E).tolist()  # lower z values
-    
-    x2_xmin = d1[0].tolist() # min lowest values
-    y2_xmin = d2[0].tolist() # min lowest values
+    x2_xmax = np.apply_along_axis(lambda x: x[0], 1, d1)  # fixed max drug 2
+    y2_xmax = np.apply_along_axis(lambda x: x[0], 1, d2)  # vary drug1
+    # lower z values
+    z2_xmax = np.apply_along_axis(lambda x: x[0], 1, E)
+
+    x2_xmin = d1[0].tolist()  # min lowest values
+    y2_xmin = d2[0].tolist()  # min lowest values
     z2_xmin = E[0].tolist()
 
-    data = {\
+    data = {
         'xs': d1scatter,
         'ys': d2scatter,
         'zs': scatter_points['effect'],
@@ -360,276 +359,3 @@ def generate_3dsur_data(d1, d2, E, scatter_points, **kwargs):
             data[k] = data[k].to_list()
 
     return data
-
-
-def plot_surface_plotly(d1, d2, E, scatter_points=None, elev=20, azim=19, \
-                 fname="plot.html", zlim=None, cmap='viridis', logscale=True, \
-                 xlabel="Drug 1", ylabel="Drug 2", zlabel="z", \
-                 vmin=None, vmax=None, auto_open=False, opacity=0.8, \
-                 center_on_zero=False, figsize=(1000,800), \
-                 fontsize=18, title=None, **kwargs):
-    
-    d1 = np.array(d1, copy=True, dtype=np.float64)
-    d2 = np.array(d2, copy=True, dtype=np.float64)
-    E = np.asarray(E)
-
-    extension = get_extension(fname)
-
-    if logscale:
-        d1 = utils.remove_zeros(d1)
-        d2 = utils.remove_zeros(d2)
-        d1 = np.log10(d1)
-        d2 = np.log10(d2)
-
-    sorted_indices = np.lexsort((d1,d2))
-    D1 = d1[sorted_indices]
-    D2 = d2[sorted_indices]
-    E = E[sorted_indices]
-
-    if title is None:
-        if fname is not None:
-            title = fname
-        else:
-            title = ""
-
-    # Replicates
-    n_replicates = np.unique(get_num_replicates(D1,D2))
-    if len(n_replicates)>1:
-        raise ValueError("plot_surface_plotly() expects the same number of replicates for each dose")
-    n_replicates = n_replicates[0]
-    
-    if n_replicates != 1:
-        aggfunc = kwargs.get('aggfunc', np.median)
-        print(F'Number of replicates : {n_replicates}. plot_surface_plotly() aggregates the data using the {aggfunc.__name__}')
-        E_agg = []
-        for e2 in np.unique(D2):
-            for e1 in np.unique(D1):
-                ix = (D1==e1) & (D2==e2)
-                E_agg.append(aggfunc(E[ix]))
-        E = np.array(E_agg)
-        D1 = np.unique(D1)
-        D2 = np.unique(D2)
-        title += (F'({aggfunc.__name__})')
-
-        d1, d2 = np.meshgrid(D1, D2)
-
-        n_d1 = len(np.unique(D1))
-        n_d2 = len(np.unique(D2))
-        E = E.reshape(n_d2,n_d1)
-    else:
-        n_d1 = len(np.unique(d1))
-        n_d2 = len(np.unique(d2))
-        d1 = d1.reshape(n_d2,n_d1)
-        d2 = d2.reshape(n_d2,n_d1)
-        E = E.reshape(n_d2,n_d1)
-
-    if center_on_zero:
-        if vmin is None or vmax is None:
-            zmax = max(abs(np.nanmin(E[~np.isinf(E)])), abs(np.nanmax(E[~np.isinf(E)])))
-            vmin = -zmax
-            vmax = zmax
-        else:
-            zmax = max(abs(vmin), abs(vmax))
-            vmin = -zmax
-            vmax = zmax
-
-    data_to_plot = [go.Surface(
-        x=d1,
-        y=d2,
-        z=E,
-        cmin=vmin,
-        cmax=vmax,
-        opacity=opacity,
-        contours_z=dict(
-            show=True,
-            usecolormap=True,
-            highlightcolor="limegreen",
-            project_z=False
-        ),
-        colorscale=cmap,
-        reversescale=False,
-        colorbar=dict(
-            lenmode='fraction',
-            len=0.65,
-            title=zlabel
-            )
-        ),
-    ]
-
-    if scatter_points is not None:
-        #d1scatter = utils.remove_zeros(np.asarray(scatter_points['drug1.conc']))
-        #d2scatter = utils.remove_zeros(np.asarray(scatter_points['drug2.conc']))
-        d1scatter = np.array(scatter_points['drug1.conc'], copy=True, dtype=np.float64)
-        d2scatter = np.array(scatter_points['drug2.conc'], copy=True, dtype=np.float64)
-        if logscale:
-            zero_mask_1 = np.where(d1scatter <= 0)
-            pos_mask_1 = np.where(d1scatter > 0)
-
-            zero_mask_2 = np.where(d2scatter <= 0)
-            pos_mask_2 = np.where(d2scatter > 0)
-
-            d1scatter[zero_mask_1] = np.min(d1)
-            d2scatter[zero_mask_2] = np.min(d2)
-            d1scatter[pos_mask_1] = np.log10(d1scatter[pos_mask_1])
-            d2scatter[pos_mask_2] = np.log10(d2scatter[pos_mask_2])
-        
-        data_to_plot.append(go.Scatter3d(
-            x=d1scatter,
-            y=d2scatter,
-            z=scatter_points['effect'],
-            mode="markers",
-            marker=dict(
-                size=3.0,
-                color=scatter_points['effect'],
-                colorscale=cmap,
-                reversescale=False,
-                cmin=vmin,
-                cmax=vmax,
-                line=dict(
-                    width=0.5,
-                    color='DarkSlateGrey'
-                )
-            )
-        ))
-
-    fig = go.Figure(data=data_to_plot)
-
-    #fig.update_traces(contours_z=dict(show=True, usecolormap=True, highlightcolor="limegreen", project_z=True))
-
-    fig.update_layout(
-        title=title,
-        autosize=False,
-        scene_camera_eye=dict(
-            x=1.87, 
-            y=0.88, 
-            z=0.64
-        ), 
-        width=figsize[0], 
-        height=figsize[1], 
-        margin=dict(
-            l=100, 
-            r=100, 
-            b=90, 
-            t=90
-        ), 
-        scene=dict(
-            xaxis_title=xlabel, 
-            yaxis_title=ylabel, 
-            zaxis_title=zlabel, 
-            aspectmode="cube"
-        ),
-        font=dict(
-            size=fontsize
-        )
-    )
-
-    if zlim is not None:
-        fig.update_layout(scene = dict(zaxis = dict(range=zlim,)))
-
-    return fig.to_json()
-        
-
-
-def plotly_isosurfaces(d1, d2, d3, E, fname=None,     \
-            cmap='viridis', xlabel="Drug 1", ylabel="Drug 2", \
-            zlabel="Drug 3",     \
-            vmin=None, vmax=None, auto_open=False, opacity=0.6,      \
-            logscale=True, isomin=None, isomax=None,                \
-            center_on_zero=False, surface_count=10, \
-            figsize=(1000,800), fontsize=18, title=None):
-    
-    d1 = np.asarray(d1)
-    d2 = np.asarray(d2)
-    d3 = np.asarray(d3)
-    
-    if (len(d1.shape) > 1):
-        d1 = d1.flatten()
-        d2 = d2.flatten()
-        d3 = d3.flatten()
-        E = E.flatten()
-
-    sorted_indices = np.lexsort((d1,d2,d3))
-    d1 = d1[sorted_indices]
-    d2 = d2[sorted_indices]
-    d3 = d3[sorted_indices]
-    E = E[sorted_indices]
-
-    if logscale:
-        d1 = utils.remove_zeros(d1)
-        d2 = utils.remove_zeros(d2)
-        d3 = utils.remove_zeros(d3)
-        d1 = np.log10(d1)
-        d2 = np.log10(d2)
-        d3 = np.log10(d3)
-    
-    
-    E_range = np.nanmax(E[~np.isinf(E)]) - np.nanmin(E[~np.isinf(E)])
-    if isomin is None:
-        isomin = np.nanmin(E[~np.isinf(E)]) + 0.1*E_range
-    if isomax is None:
-        isomax = np.nanmin(E[~np.isinf(E)]) + 0.9*E_range
-
-    if center_on_zero:
-        if vmin is None or vmax is None:
-            zmax = max(abs(np.nanmin(E[~np.isinf(E)])), abs(np.nanmax(E[~np.isinf(E)])))
-            vmin = -zmax
-            vmax = zmax
-        else:
-            zmax = max(abs(vmin), abs(vmax))
-            vmin = -zmax
-            vmax = zmax
-
-        
-    fig = go.Figure(data=go.Isosurface(
-        x=d1,
-        y=d2,
-        z=d3,
-        value=E,
-        isomin=isomin,
-        isomax=isomax,
-        cmin=vmin,
-        cmax=vmax,
-        opacity=0.6,
-        colorscale=cmap,
-        surface_count=surface_count, # number of isosurfaces, 2 by default: only min and max
-        colorbar_nticks=surface_count, # colorbar ticks correspond to isosurface values
-        caps=dict(x_show=False, y_show=False, z_show=True)
-    ))
-
-    if title is None:
-        if fname is not None:
-            title = fname
-        else:
-            title = ""
-
-    fig.update_layout(
-        title=title,
-        autosize=False,
-        scene_camera_eye=dict(
-            x=1.87, 
-            y=0.88, 
-            z=0.64
-        ), 
-        width=figsize[0],
-        height=figsize[1],
-        margin=dict(
-            l=100, 
-            r=100, 
-            b=90, 
-            t=90
-        ), 
-        scene=dict(
-            xaxis_title=xlabel, 
-            yaxis_title=ylabel, 
-            zaxis_title=zlabel, 
-            aspectmode="cube"
-        ),
-        font=dict(
-            size=fontsize
-        )
-    )
-
-    if fname is not None:
-        offline.plot(fig, filename=fname, auto_open=auto_open)
-    else:
-        fig.show()
