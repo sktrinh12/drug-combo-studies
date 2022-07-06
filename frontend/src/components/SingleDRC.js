@@ -1,5 +1,9 @@
 import React from "react";
-import Plot from "react-plotly.js";
+import Plotly from "plotly-mini"
+// import Plot from "react-plotly.js";
+// import Plotly from "plotly.js-strict-dist-min"
+import createPlotlyComponent from "react-plotly.js/factory";
+const Plot = createPlotlyComponent(Plotly);
 
 export default function SingleDRC(props) {
   const d1 = props.data["d1_conc"];

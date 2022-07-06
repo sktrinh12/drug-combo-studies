@@ -1,4 +1,8 @@
-import Plot from "react-plotly.js";
+// import Plot from "react-plotly.js";
+import Plotly from "plotly-mini"
+// import Plotly from "plotly.js-strict-dist-min"
+import createPlotlyComponent from "react-plotly.js/factory";
+const Plot = createPlotlyComponent(Plotly);
 
 const floorToExpon = (number, places) => {
   const l = 10 ** (Math.floor(Math.log10(Math.abs(number))) - places);
