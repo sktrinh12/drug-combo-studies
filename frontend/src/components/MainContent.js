@@ -1,10 +1,10 @@
-import ComboPlots from "./ComboPlots";
-import Heatmap from "./Heatmap";
-import SingleDRC from "./SingleDRC";
-import Sidebar from "./Sidebar";
 import ReactLoading from "react-loading";
 import { useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
+const ComboPlots = React.lazy(() => import("./ComboPlots"));
+const Heatmap = React.lazy(() => import("./Heatmap"));
+const SingleDRC = React.lazy(() => import("./SingleDRC"));
+const Sidebar = React.lazy(() => import("./Sidebar"));
 
 export default function MainContent(props) {
   const [expanded, setExpanded] = useState(false);
@@ -62,25 +62,40 @@ export default function MainContent(props) {
         />
       ) : (
         <>
-          <Sidebar
-            toggleSidebar={toggleSidebar}
-            expanded={expanded}
-            calcValues={data["summary"]}
-          />
-          <section
-            className={
-              expanded ? "main-content main-content--expanded" : "main-content"
+          <Suspense
+            fallback={
+              <ReactLoading
+                type="spin"
+                color="#2E86C1"
+								height={667}
+								width={375}
+                margin="auto"
+                padding="1px"
+              />
             }
           >
-            <ComboPlots
-              data={data}
+            <Sidebar
+              toggleSidebar={toggleSidebar}
               expanded={expanded}
-              drugs={drugs}
-              loading={loading}
+              calcValues={data["summary"]}
             />
-            <Heatmap data={data} drugs={drugs} />
-            <SingleDRC data={data} drugs={drugs} />
-          </section>
+            <section
+              className={
+                expanded
+                  ? "main-content main-content--expanded"
+                  : "main-content"
+              }
+            >
+              <ComboPlots
+                data={data}
+                expanded={expanded}
+                drugs={drugs}
+                loading={loading}
+              />
+              <Heatmap data={data} drugs={drugs} />
+              <SingleDRC data={data} drugs={drugs} />
+            </section>
+          </Suspense>
         </>
       )}
     </>
