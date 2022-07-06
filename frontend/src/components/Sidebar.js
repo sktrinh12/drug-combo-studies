@@ -11,11 +11,11 @@ export default function Sidebar(props) {
     // console.log(suffixStr);
     switch (prefixStr[0]) {
       case "beta":
-        return `\\beta`;
+        return `$$\\beta$$`;
       case "alpha":
-        return `\\alpha_{${suffixStr}}`;
+        return `$$\\alpha_{${suffixStr}}$$`;
       case "gamma":
-        return `\\gamma_{${suffixStr}}`;
+        return `$$\\gamma_{${suffixStr}}$$`;
       default:
         return str;
     }
