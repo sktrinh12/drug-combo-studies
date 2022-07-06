@@ -1,5 +1,5 @@
 # pull official base image
-FROM node as build
+FROM node:latest as build
 
 # set working directory
 WORKDIR /app
@@ -10,8 +10,8 @@ WORKDIR /app
 # ENV NODE_OPTIONS="--max-old-space-size=6144"
 
 # install app dependencies
-COPY package.json ./
-COPY package-lock.json ./
+COPY package*.json ./
+# COPY package-lock.json ./
 # RUN apk update && apk upgrade && apk add --update alpine-sdk && \
 #     apk add --no-cache bash git openssh make cmake g++
 # RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
@@ -28,4 +28,5 @@ RUN npm run build
 
 EXPOSE 3000
 # start app
-CMD ["serve", "-s", "-n", "build"]
+# CMD ["serve", "-s", "-n", "build"]
+CMD ["npm", "start"]
