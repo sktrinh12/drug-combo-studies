@@ -8,14 +8,16 @@
     "@testing-library/user-event": "^13.5.0",
     "better-react-mathjax": "^2.0.1",
     "node-scss": "^7.0.3",
-    "plotly-mini": "file:./vendor/plotly-mini.min.js",
+    "papaparse": "^5.4.1",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
+    "react-dropzone": "^14.2.3",
     "react-loading": "^2.0.3",
     "react-plotly.js": "^2.5.1",
     "react-router-dom": "^6.2.2",
     "react-scripts": "^5.0.1",
     "sass": "^1.49.9",
+    "styled-components": "^5.3.9",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
