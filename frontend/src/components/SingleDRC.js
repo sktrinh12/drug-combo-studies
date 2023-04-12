@@ -1,15 +1,13 @@
-import React from "react";
-import Plotly from "plotly-mini"
-// import Plot from "react-plotly.js";
-// import Plotly from "plotly.js-strict-dist-min"
-import createPlotlyComponent from "react-plotly.js/factory";
-const Plot = createPlotlyComponent(Plotly);
+import React from 'react'
+import Plotly from 'plotly.js/lib/core'
+import createPlotlyComponent from 'react-plotly.js/factory'
+const Plot = createPlotlyComponent(Plotly)
 
 export default function SingleDRC(props) {
-  const d1 = props.data["d1_conc"];
-  const d2 = props.data["d2_conc"];
-  const E1 = props.data["d1_effect"];
-  const E2 = props.data["d2_effect"];
+  const d1 = props.data.data['d1_conc']
+  const d2 = props.data.data['d2_conc']
+  const E1 = props.data.data['d1_effect']
+  const E2 = props.data.data['d2_effect']
   // console.log(d1);
   // console.log(d2);
   // console.log(E1);
@@ -22,13 +20,13 @@ export default function SingleDRC(props) {
           {
             x: d1,
             y: E1,
-            mode: "lines",
+            mode: 'lines',
             // color: '#205B9D',
             // name: 'drug 1',
-            name: props.drugs["drug1"],
+            name: props.data.data['drug1.name'],
             line: {
-              shape: "spline",
-              color: "blue",
+              shape: 'spline',
+              color: 'blue',
               width: 6,
               smoothing: 1.2,
             },
@@ -36,28 +34,28 @@ export default function SingleDRC(props) {
           {
             x: d2,
             y: E2,
-            mode: "lines",
+            mode: 'lines',
             // color: '#CD3C1E',
             // name: 'drug 2',
-            name: props.drugs["drug2"],
+            name: props.data.data['drug2.name'],
             line: {
-              shape: "spline",
-              color: "red",
+              shape: 'spline',
+              color: 'red',
               width: 6,
               smoothing: 1.2,
             },
           },
         ]}
         layout={{
-          title: "1D Dose Response Curve",
+          title: '1D Dose Response Curve',
           xaxis: {
-            title: "log(Drug Conc.)",
+            title: 'log(Drug Conc.)',
           },
           yaxis: {
-            title: "Effect",
+            title: 'Effect',
           },
         }}
       />
     </div>
-  );
+  )
 }
