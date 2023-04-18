@@ -2,6 +2,21 @@ import React from 'react'
 import styled from 'styled-components'
 import { useLocation } from 'react-router-dom'
 
+const tooltipText = `Multidimensional Synergy of Combinations (MuSyC) is a drug synergy framework based on the law of mass action (doi: 10.1016/j.cels.2019.01.003, doi: 10.1101/683433). In MuSyC, synergy is parametrically defined as shifts in potency, efficacy, or cooperativity.\n
+Alpha 2_1 : Synergistic potency ([0,1) = antagonism, (1,inf) = synergism). At large concentrations of drug 2, the "effective dose" of drug 1 = alpha21*d1.\n
+Alpha 1_2 : Synergistic potency ([0,1) = antagonism, (1,inf) = synergism). At large concentrations of drug 1, the "effective dose" of drug 2 = alpha12*d2.\n
+Beta : Synergistic efficacy ((-inf,0) = antagonism, (0,inf) = synergism). At large concentrations of both drugs, the combination achieves an effect beta-% stronger (or weaker) than the stronger single-drug.\n
+Gamma 2_1 : Synergistic cooperativity ([0,1) = antagonism, (1,inf) = synergism). At large concentrations of drug 2, the Hill slope of drug 1 = gamma21*h1\n
+Gamma 1_2 : Synergistic cooperativity ([0,1) = antagonism, (1,inf) = synergism). At large concentrations of drug 1, the Hill slope of drug 2 = gamma12*h2
+`
+
+const Container = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+`
+
 const StyledTable = styled.table`
   border-collapse: collapse;
   width: 100%;
@@ -27,12 +42,14 @@ const StyledTable = styled.table`
 
 const StyledPaper = styled.div`
 			background-color: #f5f5f5;
-			padding: 20px;
+			padding: 4px;
 			border-radius: 5px;
 			box-shadow: 0px 0px 4px #888888;
-			margin: 20px;
-			max-width: 300px;
-			text-align: center;
+			margin: 10px;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: center;
 		}
 `
 
@@ -49,9 +66,10 @@ const columns = [
 const scoreColumns = columns.map((column) => column.id)
 
 const ScoreTable = () => {
+  // const ScoreTable = ({ data, fileName }) => {
   let subsetData
   const location = useLocation()
-  const data = location.state.data?.data
+  const data = location.state.data
   const fileName = location.state.fileName
   if (data) {
     subsetData = Object.keys(data).reduce((obj, key) => {
@@ -71,9 +89,9 @@ const ScoreTable = () => {
     ),
   ]
   return (
-    <>
+    <Container>
       {data && (
-        <StyledTable>
+        <StyledTable title={tooltipText}>
           <thead>
             <tr>
               {columns.map((column) => (
@@ -92,8 +110,10 @@ const ScoreTable = () => {
           </tbody>
         </StyledTable>
       )}
-      <StyledPaper>{fileName}</StyledPaper>
-    </>
+      <StyledPaper>
+        <strong>File name:&nbsp; </strong> {fileName}
+      </StyledPaper>
+    </Container>
   )
 }
 export default ScoreTable
