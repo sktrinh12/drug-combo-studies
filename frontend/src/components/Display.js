@@ -1,24 +1,32 @@
 import ReactLoading from 'react-loading'
-import React, { useState, Suspense } from 'react'
+import React, { Suspense } from 'react'
 import { useLocation } from 'react-router-dom'
+import styled from 'styled-components'
+import ScoreTable from './ScoreTable'
 const ComboPlots = React.lazy(() => import('./ComboPlots'))
 const Heatmap = React.lazy(() => import('./Heatmap'))
 const SingleDRC = React.lazy(() => import('./SingleDRC'))
-const Sidebar = React.lazy(() => import('./Sidebar'))
 
 const height = 667
 const width = 375
 const colour = '#2E86C1'
 
+const Item = styled.div`
+  margin: 10px;
+`
+
+const Container = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+`
+
 export default function Display(props) {
   const location = useLocation()
-  const [expanded, setExpanded] = useState(false)
   const data = location.state.data
+  const fileName = location.state.fileName
   // console.log(data)
-
-  function toggleSidebar() {
-    setExpanded(!expanded)
-  }
 
   return (
     <>
@@ -34,20 +42,20 @@ export default function Display(props) {
           />
         }
       >
-        <Sidebar
-          toggleSidebar={toggleSidebar}
-          expanded={expanded}
-          calcValues={data.data['summary']}
-        />
-        <section
-          className={
-            expanded ? 'main-content main-content--expanded' : 'main-content'
-          }
-        >
-          <ComboPlots data={data} expanded={expanded} />
-          <Heatmap data={data} />
-          <SingleDRC data={data} />
-        </section>
+        <Container>
+          <Item>
+            <ScoreTable data={data} fileName={fileName} />
+          </Item>
+          <Item>
+            <ComboPlots data={data} />
+          </Item>
+          <Item>
+            <Heatmap data={data} />
+          </Item>
+          <Item>
+            <SingleDRC data={data} />
+          </Item>
+        </Container>
       </Suspense>
     </>
   )
