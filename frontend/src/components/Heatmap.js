@@ -1,8 +1,9 @@
 import Plotly from 'plotly.js/lib/core'
-import Scatter from 'plotly.js/lib/scatter'
+import Heatmap from 'plotly.js/lib/heatmap'
 import createPlotlyComponent from 'react-plotly.js/factory'
+import { transpose } from './transpose'
 
-Plotly.register([Scatter])
+Plotly.register([Heatmap])
 const Plot = createPlotlyComponent(Plotly)
 
 const floorToExpon = (number, places) => {
@@ -10,16 +11,16 @@ const floorToExpon = (number, places) => {
   return (Math.floor(number / l) * l).toExponential(places)
 }
 
-export default function Heatmap(props) {
+export default function HeatmapComp(props) {
+  const transposedData = transpose(props.data['z'])
   return (
     <div>
       <Plot
         data={[
           {
             // z: props.data["z"].map((e) => (e.reverse())),
-            z: props.data.data['z'],
+            z: transposedData,
             type: 'heatmap',
-            // colorscale: 'YlGnBu',
             colorscale: [
               ['0.0', '#fcfed6'],
               ['0.2', '#dcf2ca'],
@@ -32,34 +33,32 @@ export default function Heatmap(props) {
           },
         ]}
         layout={{
-          title: `${props.data.data['drug1.name']} vs ${props.data.data['drug2.name']} heatmap`,
-          xaxis: {
+          title: `${props.data['drug1.name']} vs ${props.data['drug2.name']} heatmap`,
+          yaxis: {
             tickmode: 'array',
-            tickvals: [...Array(props.data.data['d2_conc'].length + 1).keys()],
+            tickvals: [...Array(props.data['d2_conc'].length + 1).keys()],
             // tickvals: props.data["xticks"],
             // ticktext: props.data["xticklabels"].map((e) => (e.replace(/[${}]/gi, ''))),
             ticktext: [
               0.0,
-              ...props.data.data['d2_conc'].map((e) =>
+              ...props.data['d2_conc'].map((e) =>
                 floorToExpon(Math.pow(10, e), 2)
               ),
             ],
-            // title: 'Drug1'
-            title: props.data.data['drug2.name'],
+            title: props.data['drug2.name'],
           },
-          yaxis: {
+          xaxis: {
             tickmode: 'array',
             // tickvals: props.data["yticks"],
-            tickvals: [...Array(props.data.data['d1_conc'].length + 1).keys()],
+            tickvals: [...Array(props.data['d1_conc'].length + 1).keys()],
             // ticktext: props.data["yticklabels"].map((e) => (e.replace(/[${}]/gi, ''))),
             ticktext: [
               0.0,
-              ...props.data.data['d1_conc'].map((e) =>
+              ...props.data['d1_conc'].map((e) =>
                 floorToExpon(Math.pow(10, e), 2)
               ),
             ],
-            // title: 'Drug2'
-            title: props.data.data['drug1.name'],
+            title: props.data['drug1.name'],
           },
           annotations: [
             {
@@ -80,6 +79,7 @@ export default function Heatmap(props) {
             },
           ],
         }}
+        config={{ displaylogo: false }}
       />
     </div>
   )
