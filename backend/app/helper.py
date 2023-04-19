@@ -67,10 +67,10 @@ def map_conc_order(conc, unq_conc, reverse=False):
     return res
 
 
-def generate_model_data(df, e0_bounds, e1_bounds, e2_bounds, e3_bounds, knte_dtype):
+def generate_model_data(df, e0_bounds, e1_bounds, e2_bounds, e3_bounds, sort_indices):
     print("model running...")
 
-    if knte_dtype:
+    if sort_indices:
         unq_conc1 = np.sort(df["drug1.conc"].unique())
         unq_conc2 = np.sort(df["drug2.conc"].unique())
         group_order2 = [
@@ -102,9 +102,7 @@ def generate_model_data(df, e0_bounds, e1_bounds, e2_bounds, e3_bounds, knte_dty
 
     E = model.E(d1, d2)
     print("generate data from model...")
-    data = plots.generate_3dsur_data(
-        d1, d2, E=E, scatter_points=df, knte_dtype=knte_dtype
-    )
+    data = plots.generate_3dsur_data(d1, d2, E=E, scatter_points=df)
     params = model.get_parameters(confidence_interval=95)
     # print(params)
     # print(''.join(['-']*10))
