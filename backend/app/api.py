@@ -126,9 +126,6 @@ async def gen_model_from_file(model_input: ModelInput) -> Response:
             "drug2_name": "drug2.name",
         }
     )
-    df[["drug1.conc", "drug2.conc"]] = df[["drug1.conc", "drug2.conc"]].apply(
-        lambda x: x / 1000
-    )
-    # print(df)
+    print(df.head())
     data = generate_model_data(df, (0, 1), (0, 1), (0, 1), (0, 1), True)
-    return {"message": "Data received & analysed successfully.", "data": data}
+    return data
