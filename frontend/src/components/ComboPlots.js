@@ -1,21 +1,20 @@
 import Plotly from 'plotly.js/lib/core'
 import Scatter3d from 'plotly.js/lib/scatter3d'
+import Surface from 'plotly.js/lib/surface'
 import createPlotlyComponent from 'react-plotly.js/factory'
 
-Plotly.register([Scatter3d])
+Plotly.register([Surface, Scatter3d])
 const Plot = createPlotlyComponent(Plotly)
 
 export default function ComboPlots(props) {
-  // console.log(props.data.drugs);
+  // console.log(props.data)
   return (
     <Plot
       data={[
         {
-          x: props.data.data['x'],
-          y: props.data.data['y'],
-          z: props.data.data['z'],
-          // cmin: props.data["vmin"],
-          // cmax: props.data["vmax"],
+          x: props.data['x'],
+          y: props.data['y'],
+          z: props.data['z'],
           opacity: 0.75,
           type: 'surface',
           name: '',
@@ -27,7 +26,6 @@ export default function ComboPlots(props) {
               project: { z: false },
             },
           },
-          // colorscale: 'YlGnBu',
           colorscale: [
             ['0.0', '#fcfed6'],
             ['0.2', '#dcf2ca'],
@@ -36,7 +34,6 @@ export default function ComboPlots(props) {
             ['0.8', '#254493'],
             ['1.0', '#121c52'],
           ],
-          // reversescale: true,
           colorbar: {
             lenmode: 'fraction',
             len: 0.65,
@@ -44,16 +41,16 @@ export default function ComboPlots(props) {
           },
         },
         {
-          x: props.data.data['xs'],
-          y: props.data.data['ys'],
-          z: props.data.data['zs'],
+          x: props.data['xs'],
+          y: props.data['ys'],
+          z: props.data['zs'],
           type: 'scatter3d',
           mode: 'markers',
           showlegend: false,
           name: '',
           marker: {
             size: 3.0,
-            color: props.data.data['zs'],
+            color: props.data['zs'],
             // colorscale: 'YlGnBu',
             colorscale: [
               ['0.0', '#fcfed6'],
@@ -73,25 +70,25 @@ export default function ComboPlots(props) {
           },
         },
         {
-          x: props.data.data['x1_xmin'],
-          y: props.data.data['y1_xmin'],
-          z: props.data.data['z1_xmin'],
+          x: props.data['x1_xmin'],
+          y: props.data['y1_xmin'],
+          z: props.data['z1_xmin'],
           type: 'scatter3d',
           mode: 'lines',
-          name: props.data.data['drug1.name'] + ' HSA',
+          name: props.data['drug1.name'] + ' HSA',
           line: {
             width: 8,
             color: 'blue',
           },
         },
         {
-          x: props.data.data['x2_xmin'],
+          x: props.data['x2_xmin'],
           // y: Array(props.data["x"].length).fill(0),
-          y: props.data.data['y2_xmin'],
-          z: props.data.data['z2_xmin'],
+          y: props.data['y2_xmin'],
+          z: props.data['z2_xmin'],
           type: 'scatter3d',
           mode: 'lines',
-          name: props.data.data['drug2.name'] + ' HSA',
+          name: props.data['drug2.name'] + ' HSA',
           line: {
             width: 8,
             color: 'red',
@@ -99,16 +96,16 @@ export default function ComboPlots(props) {
         },
         {
           // y: props.data["ys"].reduce((arr, e, i) => ((props.data["xs"][i] == -1 ) && arr.push(e), arr), []),
-          y: props.data.data['y1_xmax'],
-          x: props.data.data['x1_xmax'],
-          z: props.data.data['z1_xmax'],
+          y: props.data['y1_xmax'],
+          x: props.data['x1_xmax'],
+          z: props.data['z1_xmax'],
           type: 'scatter3d',
           showlegend: false,
           name: '',
           mode: 'lines',
           line: {
             width: 8,
-            color: [...Array(props.data.data['z1_xmax'].length).keys()],
+            color: [...Array(props.data['z1_xmax'].length).keys()],
             colorscale: [
               ['0.0', 'rgb(228,14,167)'],
               ['0.111111111111', 'rgb(228,14,167)'],
@@ -125,16 +122,16 @@ export default function ComboPlots(props) {
         },
         {
           // Drug 2 is varied
-          x: props.data.data['x2_xmax'],
-          y: props.data.data['y2_xmax'],
-          z: props.data.data['z2_xmax'],
+          x: props.data['x2_xmax'],
+          y: props.data['y2_xmax'],
+          z: props.data['z2_xmax'],
           type: 'scatter3d',
           mode: 'lines',
           showlegend: false,
           name: '',
           line: {
             width: 8,
-            color: [...Array(props.data.data['z2_xmax'].length).keys()], //count of datapoints
+            color: [...Array(props.data['z2_xmax'].length).keys()], //count of datapoints
             colorscale: [
               ['0.0', 'red'],
               ['0.111111111111', 'red'],
@@ -154,7 +151,7 @@ export default function ComboPlots(props) {
         },
       ]}
       layout={{
-        title: 'Test title for 3d contour plot - dose response surface',
+        title: 'Surface Plot',
         autosize: false,
         margin: {
           l: 100,
@@ -173,10 +170,10 @@ export default function ComboPlots(props) {
             },
           },
           xaxis: {
-            title: props.data.data['drug1.name'],
+            title: props.data['drug1.name'],
           },
           yaxis: {
-            title: props.data.data['drug2.name'],
+            title: props.data['drug2.name'],
           },
           zaxis: {
             title: 'Effect',
@@ -184,6 +181,7 @@ export default function ComboPlots(props) {
           aspectmode: 'cube',
         },
       }}
+      config={{ displaylogo: false }}
     />
   )
 }
