@@ -4,14 +4,14 @@ import createPlotlyComponent from 'react-plotly.js/factory'
 const Plot = createPlotlyComponent(Plotly)
 
 export default function SingleDRC(props) {
-  const d1 = props.data.data['d1_conc']
-  const d2 = props.data.data['d2_conc']
-  const E1 = props.data.data['d1_effect']
-  const E2 = props.data.data['d2_effect']
-  // console.log(d1);
-  // console.log(d2);
-  // console.log(E1);
-  // console.log(E2);
+  const d1 = props.data['d1_conc']
+  const d2 = props.data['d2_conc']
+  const E1 = props.data['d1_effect']
+  const E2 = props.data['d2_effect']
+  // console.log(d1)
+  // console.log(d2)
+  // console.log(E1)
+  // console.log(E2)
 
   return (
     <div>
@@ -22,8 +22,7 @@ export default function SingleDRC(props) {
             y: E1,
             mode: 'lines',
             // color: '#205B9D',
-            // name: 'drug 1',
-            name: props.data.data['drug1.name'],
+            name: props.data['drug1.name'],
             line: {
               shape: 'spline',
               color: 'blue',
@@ -36,8 +35,7 @@ export default function SingleDRC(props) {
             y: E2,
             mode: 'lines',
             // color: '#CD3C1E',
-            // name: 'drug 2',
-            name: props.data.data['drug2.name'],
+            name: props.data['drug2.name'],
             line: {
               shape: 'spline',
               color: 'red',
@@ -55,6 +53,7 @@ export default function SingleDRC(props) {
             title: 'Effect',
           },
         }}
+        config={{ displaylogo: false }}
       />
     </div>
   )
