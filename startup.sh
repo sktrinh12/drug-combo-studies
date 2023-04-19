@@ -5,6 +5,12 @@ tmux split-window -v -c './frontend' 'npm run start'
 
 # Create a new window for the backend, change directory, activate virtual environment, and start backend server
 tmux new-window -n 'backend' -c './backend'
+tmux split-window -v -c './backend'
+
+# open vim in app dir
+tmux send-keys 'cd ./app && vi .' C-m
+
+tmux select-pane -t 0
 tmux send-keys 'source venv/bin/activate' C-m
 if [[ $(docker ps --filter "ancestor=pg-db" --format '{{.Names}}') ]]; then
 	echo "postgres docker container running ..."
