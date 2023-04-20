@@ -7,7 +7,6 @@
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
     "better-react-mathjax": "^2.0.1",
-    "node-scss": "^7.0.3",
     "papaparse": "^5.4.1",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
