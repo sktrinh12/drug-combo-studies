@@ -5,12 +5,8 @@ FROM node:alpine as build
 WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1
-RUN mkdir -p vendor
 
-COPY /musyc/frontend/package*.json ./
-COPY /musyc/frontend/vendor/plotly-mini.min.js ./vendor/
-# COPY package*.json ./
-# COPY /vendor/plotly-mini.min.js ./vendor/
+COPY /frontend/package*.json ./
 
 RUN apk update && apk upgrade && apk add --update alpine-sdk && \
     apk add --no-cache bash git openssh make cmake g++
@@ -19,8 +15,7 @@ RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
 
 RUN npm install 
-COPY /musyc/frontend ./
-# COPY . ./
+COPY /frontend ./
 RUN npm run build
 
 FROM nginx:alpine
