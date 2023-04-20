@@ -1,6 +1,5 @@
 import { render } from 'react-dom'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import App from './App'
 import MainContent from './components/MainContent'
 import CsvUploader from './components/CsvUploader'
 import Display from './components/Display'
@@ -11,12 +10,11 @@ const rootElement = document.getElementById('root')
 render(
   <BrowserRouter>
     <Routes>
-      <Route path='/' element={<App />} />
+      <Route path='/' element={<CsvUploader />} />
       <Route path='test' element={<MainContent route={'files'} />} />
       <Route path='test2' element={<Test />} />
       <Route path='db' element={<MainContent route={'sql'} />} />
       <Route path='visualise' element={<Display />} />
-      <Route path='upload' element={<CsvUploader />} />
       <Route path='score' element={<ScoreTable />} />
       <Route
         path='*'
