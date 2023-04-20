@@ -1,7 +1,6 @@
 import { render } from 'react-dom'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import App from './App'
-import './index.scss'
 import MainContent from './components/MainContent'
 import CsvUploader from './components/CsvUploader'
 import Display from './components/Display'
