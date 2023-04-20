@@ -8,7 +8,5 @@ coverage/
 *.swp
 .env*
 .idea
-.vscode
 *.md
-*.json
 *.txt
