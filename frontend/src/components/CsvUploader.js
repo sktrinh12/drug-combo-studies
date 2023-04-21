@@ -58,6 +58,8 @@ function CsvUploader() {
 
           setLoading(true)
           console.log('Data:', floatData)
+          console.log('----------------')
+          console.log(BACKEND_URL)
           fetch(`${BACKEND_URL}/v1/data/upload`, {
             mode: 'cors',
             method: 'POST',
