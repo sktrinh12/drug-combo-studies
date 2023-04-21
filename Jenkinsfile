@@ -10,7 +10,7 @@ pipeline {
 				booleanParam(defaultValue: false, description: 'build the backend', name: 'BUILD_BACKEND')
 		}
     options {
-        timeout(time: 5, unit: 'MINUTES')
+        timeout(time: 15, unit: 'MINUTES')
     }
     environment{
         AWSID = credentials('AWSID')
