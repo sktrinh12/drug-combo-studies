@@ -11,7 +11,8 @@ export default function MainContent(props) {
   const [data, setData] = useState()
   const [drugs, setDrugs] = useState({ drug1: '', drug2: '' })
   const [loading, setLoading] = useState(true)
-  const url = `http://localhost:8000/v1/data/${props.route}/`
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+  const url = `${BACKEND_URL}/v1/data/${props.route}/`
   // eslint-disable-next-line
   const [searchParams, setSearchParams] = useSearchParams()
   let drug1 = ''
