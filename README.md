@@ -40,6 +40,11 @@ only for development and testing.
 
 Run `npm run start` in frontend directory. Run `python main.py` in backend directory. Ensure the python environemnt has all the libraries from `requirements.txt`. Access `localhost:3000` which will point to the `CsvUpload` component. Users can drag n' drop `.csv` files to generate the Score table.
 
+### Architecture
+
+ReactJS frontend and fastapi python backend. Postgres is a dependency for testing
+of public sample datasets extracted from: `http://drugcombdb.denglab.org/`. Source file: `drugcombs_response.csv`
+
 ### Testing
 
 Browse to `http://localhost:3000/test?compound_id=${FT_NUMBER}`
