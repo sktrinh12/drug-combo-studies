@@ -155,7 +155,7 @@ pipeline {
                     --set image.tag=latest --set containers.name=fastapi \
                     --set containers.ports.containerPort=80 --set app=$APP_NAME \
                     --set terminationGracePeriodSeconds=10 \
-                    --set ingress.enabled=false --set service.type=ClusterIP \
+                    --set ingress.enabled=false --set service.type=ClusterIP
                   else
                     echo "skipping helm install of backend"
                   fi
