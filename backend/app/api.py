@@ -20,7 +20,7 @@ from .schema import ModelInput
 
 app = FastAPI()
 
-origins = ["http://localhost:3000", "localhost:3000", "http://drug.combo.kinnate"]
+origins = ["http://localhost:3000", "localhost:3000", "http://musyc.frontend.kinnate"]
 
 app.add_middleware(
     CORSMiddleware,
