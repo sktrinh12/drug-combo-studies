@@ -73,8 +73,12 @@ const ScoreTable = () => {
   if (data) {
     subsetData = Object.keys(data).reduce((obj, key) => {
       if (scoreColumns.includes(key)) {
-        // conditionally grab the first element of array for model params
-        obj[key] = key.includes('drug') ? data[key] : data[key][0]
+        // grab the stat and CI for each parameter (alpha, beta, gamma)
+        obj[key] = key.includes('drug')
+          ? data[key]
+          : `${data[key][0].toFixed(4)} [${data[key][1][0].toExponential(
+              2
+            )}, ${data[key][1][1].toExponential(2)}]`
       }
       return obj
     }, {})
@@ -82,9 +86,7 @@ const ScoreTable = () => {
   console.log(subsetData)
   subsetData = [
     Object.fromEntries(
-      Object.entries(subsetData).map(([key, value]) =>
-        key.includes('drug') ? [key, value] : [key, value.toFixed(4)]
-      )
+      Object.entries(subsetData).map(([key, value]) => [key, value])
     ),
   ]
   return (
