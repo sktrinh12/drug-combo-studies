@@ -22,7 +22,7 @@ else
 	echo "postgres docker container not running, starting up now ..."
 	docker run -d --name postgres --rm -p 5432:5432 pg-db
 	echo 'sleeping for 10 seconds to allow postgres startup'
-	sleep 10
+	sleep 20
 fi
 tmux send-keys 'python main.py' C-m
 
