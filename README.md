@@ -38,7 +38,7 @@ only for development and testing.
 
 ### Accessing app
 
-Run `npm run start` in frontend directory. Run `python main.py` in backend directory. Ensure the python environemnt has all the libraries from `requirements.txt`. Access `localhost:3000` which will point to the `CsvUpload` component. Users can drag n' drop `.csv` files to generate the Score table.
+Run `npm run start` in frontend directory. Run `python main.py` in backend directory. Ensure the python environemnt has all the libraries from `requirements.txt`. Access `localhost:3000` which will point to the `CsvUpload` component. Users can drag n' drop `.csv` files to generate the Score table. There is a `Dockerfile` in the postgres directory that would need to be built in order to use the public dataset for testing. Once the image is available and the container is named `postgres`, the python backend should be able to access it. If `tmux` is installed, one can use the `startup.sh` script to automatically start the application in its entirety.
 
 ### Architecture
 
