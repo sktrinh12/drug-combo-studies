@@ -39,19 +39,6 @@ const StyledTable = styled.table`
   }
 `
 
-const StyledPaper = styled.div`
-			background-color: #f5f5f5;
-			padding: 4px;
-			border-radius: 5px;
-			box-shadow: 0px 0px 4px #888888;
-			margin: 10px;
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: center;
-			align-items: center;
-		}
-`
-
 const columns = [
   { id: 'drug1.name', label: 'Drug 1' },
   { id: 'drug2.name', label: 'Drug 2' },
@@ -128,7 +115,7 @@ const ScoreTable = () => {
   )
   return (
     <Container>
-      <h2>All General Statistics</h2>
+      <h2>All General Statistics for file:&nbsp; {fileName}</h2>
       {data && (
         <StyledTable title={tooltipText}>
           <thead>
@@ -150,12 +137,11 @@ const ScoreTable = () => {
         </StyledTable>
       )}
 
-      <h2>Selected Statistics (95% conf.) & Effect</h2>
-      {formattedSummaryStats}
+      <h2>
+        Selected Statistics (95% conf.) & Effect for file:&nbsp; {fileName}
+      </h2>
 
-      <StyledPaper>
-        <strong>File name:&nbsp; </strong> {fileName}
-      </StyledPaper>
+      {formattedSummaryStats}
     </Container>
   )
 }
