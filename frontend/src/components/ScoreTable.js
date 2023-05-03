@@ -19,7 +19,7 @@ const Container = styled.div`
 const StyledTable = styled.table`
   border-collapse: collapse;
   width: 100%;
-
+  margin-bottom: 20px;
   th,
   td {
     text-align: left;
@@ -89,8 +89,46 @@ const ScoreTable = () => {
       Object.entries(subsetData).map(([key, value]) => [key, value])
     ),
   ]
+  // const summaryStats  =
+  //   'alpha12\t27.68\t(13.30,62.04)\t(>1) synergistic\nalpha21\t40.82\t(16.02,177.67)\t(>1) synergistic\ngamma21\t0.11\t(0.08,0.20)\t(<1) antagonistic'
+  const summaryStats = data.summary
+  const lines = summaryStats.split('\n')
+  const formattedSummaryStats = (
+    <StyledTable title='Statistics with 95% confidence'>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Value</th>
+          <th>Range</th>
+          <th>Effect</th>
+        </tr>
+      </thead>
+      <tbody>
+        {lines.map((line, index) => {
+          const cells = line.split('\t')
+          const name = cells[0]
+            .replace(/([a-z])([0-9])([0-9])/i, '$1 $2_$3')
+            .replace(/\b\w/g, (c) => c.toUpperCase())
+          const value = cells[1]
+          const range = cells[2]
+          const effect = cells[3]
+          return (
+            <tr key={index}>
+              <td>
+                <b>{name}</b>
+              </td>
+              <td>{value}</td>
+              <td>{range.replace(/\(/i, '[').replace(/\)/i, ']')}</td>
+              <td>{effect}</td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </StyledTable>
+  )
   return (
     <Container>
+      <h2>All General Statistics</h2>
       {data && (
         <StyledTable title={tooltipText}>
           <thead>
@@ -111,6 +149,10 @@ const ScoreTable = () => {
           </tbody>
         </StyledTable>
       )}
+
+      <h2>Selected Statistics (95% conf.) & Effect</h2>
+      {formattedSummaryStats}
+
       <StyledPaper>
         <strong>File name:&nbsp; </strong> {fileName}
       </StyledPaper>
