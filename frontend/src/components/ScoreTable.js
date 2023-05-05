@@ -76,46 +76,18 @@ const ScoreTable = () => {
       Object.entries(subsetData).map(([key, value]) => [key, value])
     ),
   ]
-  // const summaryStats  =
-  //   'alpha12\t27.68\t(13.30,62.04)\t(>1) synergistic\nalpha21\t40.82\t(16.02,177.67)\t(>1) synergistic\ngamma21\t0.11\t(0.08,0.20)\t(<1) antagonistic'
   const summaryStats = data.summary
-  const lines = summaryStats.split('\n')
-  const formattedSummaryStats = (
-    <StyledTable title='Statistics with 95% confidence'>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Value</th>
-          <th>Range</th>
-          <th>Effect</th>
-        </tr>
-      </thead>
-      <tbody>
-        {lines.map((line, index) => {
-          const cells = line.split('\t')
-          const name = cells[0]
-            .replace(/([a-z])([0-9])([0-9])/i, '$1 $2_$3')
-            .replace(/\b\w/g, (c) => c.toUpperCase())
-          const value = cells[1]
-          const range = cells[2]
-          const effect = cells[3]
-          return (
-            <tr key={index}>
-              <td>
-                <b>{name}</b>
-              </td>
-              <td>{value}</td>
-              <td>{range.replace(/\(/i, '[').replace(/\)/i, ']')}</td>
-              <td>{effect}</td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </StyledTable>
-  )
+  let effectByParam = []
+
+  summaryStats.split('\n').forEach((line) => {
+    const values = line.split('\t')
+    effectByParam[values[0]] = values[3].split(' ')[1]
+  })
   return (
     <Container>
-      <h2>All General Statistics for file:&nbsp; {fileName}</h2>
+      <h2>
+        General Statistics (95% conf.) & Effect for file:&nbsp; {fileName}
+      </h2>
       {data && (
         <StyledTable title={tooltipText}>
           <thead>
@@ -129,19 +101,25 @@ const ScoreTable = () => {
             {subsetData.map((row, i) => (
               <tr key={`row_${i}`}>
                 {columns.map((column) => (
-                  <td key={column.id}>{row[column.id]}</td>
+                  <td key={column.id}>
+                    {row[column.id]}{' '}
+                    <span
+                      style={{
+                        color:
+                          effectByParam[column.id] === 'synergistic'
+                            ? 'green'
+                            : 'red',
+                      }}
+                    >
+                      {effectByParam[column.id] ? effectByParam[column.id] : ''}
+                    </span>
+                  </td>
                 ))}
               </tr>
             ))}
           </tbody>
         </StyledTable>
       )}
-
-      <h2>
-        Selected Statistics (95% conf.) & Effect for file:&nbsp; {fileName}
-      </h2>
-
-      {formattedSummaryStats}
     </Container>
   )
 }
