@@ -54,6 +54,7 @@ const scoreColumns = columns.map((column) => column.id)
 const ScoreTable = () => {
   // const ScoreTable = ({ data, fileName }) => {
   let subsetData
+  let effectByParam = []
   const location = useLocation()
   const data = location.state.data
   const fileName = location.state.fileName
@@ -69,20 +70,26 @@ const ScoreTable = () => {
       }
       return obj
     }, {})
+    console.log(subsetData)
+    subsetData = [
+      Object.fromEntries(
+        Object.entries(subsetData).map(([key, value]) => [key, value])
+      ),
+    ]
+    const summaryStats = data.summary
+    if (summaryStats.includes('No synergy or antagonism')) {
+      const columnsIds = columns.slice(2).map((column) => column.id)
+      for (let i = 0; i < columnsIds.length; i++) {
+        effectByParam[columnsIds[i]] = summaryStats
+      }
+    } else {
+      summaryStats.split('\n').forEach((line) => {
+        const values = line.split('\t')
+        effectByParam[values[0]] = values[3].split(' ')[1]
+      })
+    }
+    console.log(effectByParam)
   }
-  console.log(subsetData)
-  subsetData = [
-    Object.fromEntries(
-      Object.entries(subsetData).map(([key, value]) => [key, value])
-    ),
-  ]
-  const summaryStats = data.summary
-  let effectByParam = []
-
-  summaryStats.split('\n').forEach((line) => {
-    const values = line.split('\t')
-    effectByParam[values[0]] = values[3].split(' ')[1]
-  })
   return (
     <Container>
       <h2>
