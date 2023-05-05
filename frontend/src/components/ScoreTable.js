@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useLocation } from 'react-router-dom'
+import GoHomeIcon from './GoHomeButton'
 
 const tooltipText = `Multidimensional Synergy of Combinations (MuSyC) is a drug synergy framework based on the law of mass action. In MuSyC, synergy is parametrically defined as shifts in potency, efficacy, or cooperativity.\n
 Alpha 2_1 : Synergistic potency (0,1) = antagonism, (1,inf) = synergism. At large concentrations of drug 2, the "effective dose" of drug 1 = alpha21*d1.\n
@@ -91,43 +92,48 @@ const ScoreTable = () => {
     console.log(effectByParam)
   }
   return (
-    <Container>
-      <h2>
-        General Statistics (95% conf.) & Effect for file:&nbsp; {fileName}
-      </h2>
-      {data && (
-        <StyledTable title={tooltipText}>
-          <thead>
-            <tr>
-              {columns.map((column) => (
-                <th key={column.id}>{column.label}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {subsetData.map((row, i) => (
-              <tr key={`row_${i}`}>
+    <>
+      <GoHomeIcon />
+      <Container>
+        <h2>
+          General Statistics (95% conf.) & Effect for file:&nbsp; {fileName}
+        </h2>
+        {data && (
+          <StyledTable title={tooltipText}>
+            <thead>
+              <tr>
                 {columns.map((column) => (
-                  <td key={column.id}>
-                    {row[column.id]}{' '}
-                    <span
-                      style={{
-                        color:
-                          effectByParam[column.id] === 'synergistic'
-                            ? 'green'
-                            : 'red',
-                      }}
-                    >
-                      {effectByParam[column.id] ? effectByParam[column.id] : ''}
-                    </span>
-                  </td>
+                  <th key={column.id}>{column.label}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </StyledTable>
-      )}
-    </Container>
+            </thead>
+            <tbody>
+              {subsetData.map((row, i) => (
+                <tr key={`row_${i}`}>
+                  {columns.map((column) => (
+                    <td key={column.id}>
+                      {row[column.id]}{' '}
+                      <span
+                        style={{
+                          color:
+                            effectByParam[column.id] === 'synergistic'
+                              ? 'green'
+                              : 'red',
+                        }}
+                      >
+                        {effectByParam[column.id]
+                          ? effectByParam[column.id]
+                          : ''}
+                      </span>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </StyledTable>
+        )}
+      </Container>
+    </>
   )
 }
 export default ScoreTable
