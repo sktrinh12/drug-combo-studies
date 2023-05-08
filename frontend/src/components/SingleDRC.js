@@ -45,7 +45,7 @@ export default function SingleDRC(props) {
           },
         ]}
         layout={{
-          title: '1D Dose Response Curve',
+          title: '1D Dose Effect Curve',
           xaxis: {
             title: 'log(Drug Conc.)',
           },
