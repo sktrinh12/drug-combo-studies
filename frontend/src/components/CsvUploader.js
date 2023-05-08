@@ -73,7 +73,7 @@ function CsvUploader() {
               console.log(respData)
               setFileError(null)
               navigate(
-                '/score',
+                '/visualise',
                 { state: { data: respData, fileName: acceptedFiles[0].name } },
                 { target: '_blank' }
               )
