@@ -3,50 +3,18 @@ from .musyc.combinations.musyc import MuSyC
 from .musyc.utils import plots, dose_tools, np
 import pandas as pd
 
-# from musyc.combinations.musyc import MuSyC
-# from musyc.utils import plots, dose_tools
 
-
-# def run_model(df,
-#               e0_bounds,
-#               e1_bounds,
-#               e2_bounds,
-#               e3_bounds):
-
-#     print('model running...')
-
-#     model = MuSyC(e0_bounds,
-#                   e1_bounds,
-#                   e2_bounds,
-#                   e3_bounds)
-
-#     model.fit(df['drug1.conc'],
-#              df['drug2.conc'],
-#              df['effect'],
-#              bootstrap_iterations=100)
-
-#     return model
-
-# def visualise_model(df, model, type):
-#     print(f'plotting {type}')
-#     d1 = df['drug1.conc']
-#     d2 = df['drug2.conc']
-#     E = model.E(d1, d2)
-#     if type == "heatmap":
-#         return plots.plot_heatmap(d1, d2, xlabel='Drug1', ylabel='Drug2', E=E)
-#     elif type == "3dsurface":
-#         return plots.plot_surface_plotly(d1, d2, xlabel='Drug1', ylabel='Drug2', E=E, scatter_points=df)
-
-# def generate_specific_model_data(df, model, type):
-#     print(f'generating data for {type}')
-#     d1 = df['drug1.conc']
-#     d2 = df['drug2.conc']
-#     E = model.E(d1, d2)
-#     if type == "heatmap":
-#         data = plots.generate_heatmap_data(d1, d2, E=E)
-#     elif type == "3dsurface":
-#         data = plots.generate_3dsur_data(d1, d2, E=E, scatter_points=df)
-#     return data
+def replace_nan(d):
+    new_d = {}
+    for k, v in d.items():
+        new_v = []
+        for x in v:
+            if isinstance(x, list):
+                new_v.append([val if not np.isnan(val) else -1 for val in x])
+            else:
+                new_v.append(x if not np.isnan(x) else -1)
+        new_d[k] = new_v
+    return new_d
 
 
 def map_conc_order(conc, unq_conc, reverse=False):
@@ -103,8 +71,9 @@ def generate_model_data(df, e0_bounds, e1_bounds, e2_bounds, e3_bounds, sort_ind
     E = model.E(d1, d2)
     print("generate data from model...")
     data = plots.generate_3dsur_data(d1, d2, E=E, scatter_points=df)
-    params = model.get_parameters(confidence_interval=95)
-    # print(params)
+    # remove nans
+    params = replace_nan(model.get_parameters(confidence_interval=95))
+    print(params)
     # print(''.join(['-']*10))
     summary = model.summary(confidence_interval=95)
     # print(summary)
