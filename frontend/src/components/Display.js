@@ -3,9 +3,9 @@ import React, { Suspense } from 'react'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import ScoreTable from './ScoreTable'
-const ComboPlots = React.lazy(() => import('./ComboPlots'))
 const Heatmap = React.lazy(() => import('./Heatmap'))
-const SingleDRC = React.lazy(() => import('./SingleDRC'))
+// const ComboPlots = React.lazy(() => import('./ComboPlots'))
+// const SingleDRC = React.lazy(() => import('./SingleDRC'))
 
 const height = 667
 const width = 375
@@ -46,15 +46,15 @@ export default function Display(props) {
           <Item>
             <ScoreTable data={data} fileName={fileName} />
           </Item>
-          <Item>
+          {/*<Item>
             <ComboPlots data={data} />
-          </Item>
+          </Item>*/}
           <Item>
             <Heatmap data={data} />
           </Item>
-          <Item>
+          {/*<Item>
             <SingleDRC data={data} />
-          </Item>
+          </Item>*/}
         </Container>
       </Suspense>
     </>
