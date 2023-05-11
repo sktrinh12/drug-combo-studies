@@ -23,6 +23,13 @@ The current fit algorithm leveraged in the MuSyC portal is described in the Meth
 - γ12 - Fold change in the cooperativity (h2) of [d2] induced by drug 1
 - γ21 - Fold change in the cooperativity (h1) of [d1] induced by drug 2
 
+### References
+
+- https://www.nature.com/articles/s41467-021-24789-z
+- https://academic.oup.com/bioinformatics/article/37/10/1473/5909985?login=false
+- https://github.com/djwooten/natcomms-musyc2021
+- https://github.com/djwooten/synergy
+
 ![plot_diagrams](images/plot_diagrams.png)
 ![linear_pathway_diagram](images/linear_pathway_diagram.png)
 ![full_assessment](images/full_assessment.png)
