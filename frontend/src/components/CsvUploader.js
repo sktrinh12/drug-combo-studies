@@ -4,6 +4,7 @@ import { useDropzone } from 'react-dropzone'
 import Papa from 'papaparse'
 import styled from 'styled-components'
 import ReactLoading from 'react-loading'
+import AppVersion from './AppVersionTag'
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
 
@@ -112,19 +113,22 @@ function CsvUploader() {
       <ReactLoading type='spin' color={'#343990ff'} height={667} width={375} />
     </div>
   ) : (
-    <DropzoneContainer {...getRootProps()}>
-      <input {...getInputProps()} />
-      <p>Drag 'n' drop a CSV file here, or click to select file</p>
-      <p>Ensure the following column names exist:</p>
-      <Code className='code'>
-        <p>drug1.conc</p>
-        <p>drug2.conc</p>
-        <p>effect</p>
-        <p>drug1.name</p>
-        <p>drug2.name</p>
-      </Code>
-      {fileError && <p>{fileError}</p>}
-    </DropzoneContainer>
+    <>
+      <DropzoneContainer {...getRootProps()}>
+        <input {...getInputProps()} />
+        <p>Drag 'n' drop a CSV file here, or click to select file</p>
+        <p>Ensure the following column names exist:</p>
+        <Code className='code'>
+          <p>drug1.conc</p>
+          <p>drug2.conc</p>
+          <p>effect</p>
+          <p>drug1.name</p>
+          <p>drug2.name</p>
+        </Code>
+        {fileError && <p>{fileError}</p>}
+      </DropzoneContainer>
+      <AppVersion />
+    </>
   )
 }
 
