@@ -8,6 +8,7 @@ pipeline {
     parameters {
 				booleanParam(defaultValue: true, description: 'build the frontend', name: 'BUILD_FRONTEND')
 				booleanParam(defaultValue: false, description: 'build the backend', name: 'BUILD_BACKEND')
+				string(defaultValue: '0.1', description: 'app version', name: 'VERSION_NUMBER')
 		}
     options {
         timeout(time: 15, unit: 'MINUTES')
@@ -72,6 +73,8 @@ pipeline {
                 --no-cache --network=host \
                 -t $AWSID.dkr.ecr.us-west-2.amazonaws.com/$APP_NAME-frontend:latest \
                 --build-arg REACT_APP_BACKEND_URL=http://musyc.backend.kinnate \
+                --build-arg REACT_APP_VERSION=${APP_VERSION} \
+                --build-arg REACT_APP_ENVIRONMENT=PROD \
                 -f frontend/Dockerfile.prod .
                 ''', returnStdout: true
                 )
