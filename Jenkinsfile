@@ -73,7 +73,7 @@ pipeline {
                 --no-cache --network=host \
                 -t $AWSID.dkr.ecr.us-west-2.amazonaws.com/$APP_NAME-frontend:latest \
                 --build-arg REACT_APP_BACKEND_URL=http://musyc.backend.kinnate \
-                --build-arg REACT_APP_VERSION=${APP_VERSION} \
+                --build-arg REACT_APP_VERSION=${VERSION_NUMBER} \
                 --build-arg REACT_APP_ENVIRONMENT=PROD \
                 -f frontend/Dockerfile.prod .
                 ''', returnStdout: true
