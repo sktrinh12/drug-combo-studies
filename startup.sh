@@ -3,7 +3,7 @@
 # Split the current tmux window into two panes
 
 tmux split-window -v -c './frontend'
-tmux send-keys 'export REACT_APP_BACKEND_URL=http://localhost:80 && export REACT_APP_VERSION=0.1 && export REACT_APP_ENIRONMENT=DEV' C-m
+tmux send-keys 'export REACT_APP_BACKEND_URL=http://localhost:80 && export REACT_APP_VERSION=0.1 && export REACT_APP_ENVIRONMENT=DEV' C-m
 tmux send-keys 'npm run start' C-m
 
 # Create a new window for the backend, change directory, activate virtual environment, and start backend server
@@ -28,6 +28,3 @@ tmux send-keys 'python main.py' C-m
 
 # Switch back to the first pane
 tmux select-pane -t 0
-
-# Attach to the tmux session to view the panes and windows
-# tmux attach-session
