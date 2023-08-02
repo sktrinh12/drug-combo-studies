@@ -158,7 +158,7 @@ pipeline {
                     --set image.tag=latest --set containers.name=fastapi \
                     --set containers.ports.containerPort=80 --set app=$APP_NAME \
                     --set terminationGracePeriodSeconds=10 \
-										--set resources.limits.cpu=100m,resources.limits.memory=128Mi,resources.requests.cpu=100m,resources.requests.memory=128Mi \
+										--set resources.limits.cpu=300m,resources.limits.memory=300Mi,resources.requests.cpu=150m,resources.requests.memory=150Mi \
                     --set ingress.enabled=false --set service.type=ClusterIP
                   else
                     echo "skipping helm install of backend"
