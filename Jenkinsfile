@@ -158,6 +158,7 @@ pipeline {
                     --set image.tag=latest --set containers.name=fastapi \
                     --set containers.ports.containerPort=80 --set app=$APP_NAME \
                     --set terminationGracePeriodSeconds=10 \
+										--set resources.limits.cpu=100m,resources.limits.memory=128Mi,resources.requests.cpu=100m,resources.requests.memory=128Mi \
                     --set ingress.enabled=false --set service.type=ClusterIP
                   else
                     echo "skipping helm install of backend"
@@ -171,6 +172,7 @@ pipeline {
                     --set image.tag=latest --set containers.name=react \
                     --set containers.ports.containerPort=80 --set app=$APP_NAME \
                     --set terminationGracePeriodSeconds=10 --set service.type=ClusterIP \
+										--set resources.limits.cpu=200m,resources.limits.memory=200Mi,resources.requests.cpu=100m,resources.requests.memory=128Mi \
                     --set ingress.enabled=false
                   else
                     echo "skipping helm install of frontend"
